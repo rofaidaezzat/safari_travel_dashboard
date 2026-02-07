@@ -5,6 +5,8 @@ export interface News {
     title: string;
     category: string;
     image: string;
+    coverImage?: string;
+    tags?: string[];
     summary: string;
     content: string;
     author: string;

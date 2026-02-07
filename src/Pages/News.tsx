@@ -122,7 +122,7 @@ const NewsPage = () => {
                         <div className="flex flex-wrap gap-1">
                             {item.tags && item.tags.length > 0 ? (
                                 <>
-                                    {item.tags.slice(0, 2).map((tag, i) => (
+                                    {item.tags.slice(0, 2).map((tag: string, i: number) => (
                                         <span key={i} className="px-2 py-0.5 rounded-full bg-muted text-xs text-muted-foreground flex items-center gap-1">
                                             <Tag className="w-2 h-2" /> {tag}
                                         </span>
