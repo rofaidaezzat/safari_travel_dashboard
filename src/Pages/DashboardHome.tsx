@@ -25,6 +25,7 @@ import {
   Bar,
 } from "recharts";
 import { DashboardLayout } from "../Components/DashboardLayout";
+import { DashboardSkeleton } from "../Components/UI/DashboardSkeleton";
 import { Link } from "react-router-dom";
 import {
   useGetDashboardCountsQuery,
@@ -35,11 +36,13 @@ import {
 
 // TODO: Replace with actual API data
 export default function DashboardHome() {
-  const { data: counts } = useGetDashboardCountsQuery();
+  const { data: counts, isLoading: countsLoading } = useGetDashboardCountsQuery();
   const { data: trends, isLoading: trendsLoading } = useGetDashboardTrendsQuery();
-  const { data: appStatus } = useGetApplicationStatusQuery();
+  const { data: appStatus, isLoading: appStatusLoading } = useGetApplicationStatusQuery();
   const [page, setPage] = useState(1);
   const { data: activities, isLoading: activitiesLoading, isFetching } = useGetRecentActivitiesQuery({ page, limit: 10 });
+
+  const isLoading = countsLoading || trendsLoading || appStatusLoading || activitiesLoading;
 
   const getRecentActivityIcon = (type: string) => {
     switch (type) {
@@ -119,7 +122,10 @@ export default function DashboardHome() {
   ];
   return (
     <DashboardLayout>
-      <div className="space-y-8">
+      {isLoading ? (
+        <DashboardSkeleton />
+      ) : (
+        <div className="space-y-8">
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
@@ -306,7 +312,8 @@ export default function DashboardHome() {
         </motion.div>
 
        
-      </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }
