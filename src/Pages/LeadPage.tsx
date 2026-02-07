@@ -10,6 +10,7 @@ import { CreateLeadModal } from "../Components/LeadModal/CreateLead";
 import { UpdateLeadStatusModal } from "../Components/LeadModal/UpdateLeadStatus";
 import { DeleteLeadModal } from "../Components/LeadModal/DeleteLead";
 import { ViewLeadModal } from "../Components/LeadModal/ViewLead";
+import { TableSkeleton } from "../Components/UI/TableSkeleton";
 
 export default function LeadPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,7 +22,7 @@ export default function LeadPage() {
   const [showView, setShowView] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
-  const { data, isError, error, refetch } = useGetLeadsQuery({ page, limit: 10, sort });
+  const { data, isLoading, isError, error, refetch } = useGetLeadsQuery({ page, limit: 10, sort });
 
   const leads = data?.data.leads || [];
 
@@ -118,7 +119,9 @@ export default function LeadPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredLeads.length > 0 ? (
+                {isLoading ? (
+                  <TableSkeleton columns={6} />
+                ) : filteredLeads.length > 0 ? (
                   filteredLeads.map((lead) => (
                     <tr key={lead._id} className="border-t border-border hover:bg-muted/30 transition-colors">
                       <td className="py-4 px-6">

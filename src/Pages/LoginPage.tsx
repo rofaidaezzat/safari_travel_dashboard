@@ -44,6 +44,12 @@ export default function LoginPage() {
       if (result?.data?.user?.role) {
         localStorage.setItem("role", result.data.user.role);
       }
+      if (result?.data?.user?.email) {
+        localStorage.setItem("email", result.data.user.email);
+      }
+      if (result?.data?.user?.name) {
+        localStorage.setItem("name", result.data.user.name);
+      }
       if (result?.data?.user?._id) {
           localStorage.setItem("userId", result.data.user._id);
       }

@@ -10,6 +10,7 @@ import { CreateUniversityModal } from "../Components/UniversityModal/CreateUnive
 import { UpdateUniversityModal } from "../Components/UniversityModal/UpdateUniversity";
 import { DeleteUniversityModal } from "../Components/UniversityModal/DeleteUniversity";
 import { ViewUniversityModal } from "../Components/UniversityModal/ViewUniversity";
+import { TableSkeleton } from "../Components/UI/TableSkeleton";
 
 export default function UniversityPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,7 +22,7 @@ export default function UniversityPage() {
   const [showView, setShowView] = useState(false);
   const [selectedUniversity, setSelectedUniversity] = useState<University | null>(null);
 
-  const { data, isError, error, refetch } = useGetUniversitiesQuery({ page, limit: 10, sort });
+  const { data, isLoading, isError, error, refetch } = useGetUniversitiesQuery({ page, limit: 10, sort });
 
   const universities = data?.data.universities || [];
 
@@ -103,7 +104,9 @@ export default function UniversityPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredUniversities.length > 0 ? (
+                {isLoading ? (
+                  <TableSkeleton columns={6} />
+                ) : filteredUniversities.length > 0 ? (
                   filteredUniversities.map((uni) => (
                     <tr key={uni._id} className="border-t border-border hover:bg-muted/30 transition-colors">
                       <td className="py-4 px-6">

@@ -8,7 +8,6 @@ import {
   GraduationCap,
   BookOpen,
   FileText,
-  MessageSquare,
   LogOut,
   Menu,
   ChevronRight,
@@ -54,6 +53,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   });
 
   const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("role");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("name");
+    localStorage.removeItem("email");
     navigate("/");
   };
 
@@ -129,11 +133,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm font-medium">Admin User</p>
-                <p className="text-xs text-muted-foreground">admin@wasil.edu</p>
+                <p className="text-sm font-medium">{localStorage.getItem("name") || "Admin User"}</p>
+                <p className="text-xs text-muted-foreground">{localStorage.getItem("email") || "admin@wasil.edu"}</p>
               </div>
               <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center text-primary-foreground font-medium">
-                A
+                {localStorage.getItem("name")?.charAt(0).toUpperCase() || "A"}
               </div>
             </div>
           </div>

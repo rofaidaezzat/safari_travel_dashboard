@@ -10,6 +10,7 @@ import { CreateNewsModal } from "../Components/NewsModal/CreateNews";
 import { UpdateNewsModal } from "../Components/NewsModal/UpdateNews";
 import { DeleteNewsModal } from "../Components/NewsModal/DeleteNews";
 import { ViewNewsModal } from "../Components/NewsModal/ViewNews";
+import { TableSkeleton } from "../Components/UI/TableSkeleton";
 
 const NewsPage = () => {
   const [page, setPage] = useState(1);
@@ -97,9 +98,7 @@ const NewsPage = () => {
               </thead>
               <tbody>
                 {isLoading ? (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center text-muted-foreground">Loading news...</td>
-                  </tr>
+                  <TableSkeleton columns={5} />
                 ) : newsList.length > 0 ? (
                     newsList.map((item) => (
                     <tr

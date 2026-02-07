@@ -13,6 +13,7 @@ import { DeleteTravelModal } from "../Components/TravelModal/DeleteTravel";
 import { ViewTravelModal } from "../Components/TravelModal/ViewTravel";
 import { AssignTravelModal } from "../Components/TravelModal/AssignTravel";
 import { UpdateAssignmentStatusModal } from "../Components/UpdateAssignmentStatusModal";
+import { TableSkeleton } from "../Components/UI/TableSkeleton";
 
 interface TravelWithAssignment extends TravelType {
   assignmentId?: string;
@@ -208,9 +209,7 @@ const Travel = () => {
               </thead>
               <tbody>
                 {isLoading ? (
-                  <tr>
-                    <td colSpan={6} className="py-8 text-center text-muted-foreground">Loading travel requests...</td>
-                  </tr>
+                  <TableSkeleton columns={7} />
                 ) : travels.length > 0 ? (
                     travels.map((travel) => (
                     <tr

@@ -10,6 +10,7 @@ import { CreateBlogModal } from "../Components/BlogModal/CreateBlog";
 import { UpdateBlogModal } from "../Components/BlogModal/UpdateBlog";
 import { DeleteBlogModal } from "../Components/BlogModal/DeleteBlog";
 import { ViewBlogModal } from "../Components/BlogModal/ViewBlog";
+import { TableSkeleton } from "../Components/UI/TableSkeleton";
 
 const BlogPage = () => {
   const [page, setPage] = useState(1);
@@ -96,9 +97,7 @@ const BlogPage = () => {
               </thead>
               <tbody>
                 {isLoading ? (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center text-muted-foreground">Loading blogs...</td>
-                  </tr>
+                  <TableSkeleton columns={5} />
                 ) : blogs.length > 0 ? (
                     blogs.map((item) => (
                     <tr

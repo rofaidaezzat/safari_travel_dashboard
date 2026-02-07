@@ -9,6 +9,7 @@ import { CreatePartnerModal } from "../Components/PartnerModal/CreatePartner";
 import { UpdatePartnerModal } from "../Components/PartnerModal/UpdatePartner";
 import { DeletePartnerModal } from "../Components/PartnerModal/DeletePartner";
 import { Pagination } from "../Components/Pagination";
+import { TableSkeleton } from "../Components/UI/TableSkeleton";
 
 export default function PartnersPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,7 +20,7 @@ export default function PartnersPage() {
   const [showDelete, setShowDelete] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
 
-  const { data, isError, error, refetch } = useGetPartnersQuery({ page, limit: 10, sort });
+  const { data, isLoading, isError, error, refetch } = useGetPartnersQuery({ page, limit: 10, sort });
 
   const partners = data?.data.partners || [];
 
@@ -94,7 +95,9 @@ export default function PartnersPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredPartners.length > 0 ? (
+                {isLoading ? (
+                  <TableSkeleton columns={4} />
+                ) : filteredPartners.length > 0 ? (
                   filteredPartners.map((partner) => (
                     <tr key={partner._id} className="border-t border-border hover:bg-muted/30 transition-colors">
                       <td className="py-4 px-6">

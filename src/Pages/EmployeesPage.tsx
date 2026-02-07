@@ -17,6 +17,7 @@ import { UpdateEmployeeModal } from "../Components/EmployeeModal/UpdateEmployee"
 import { DeleteEmployeeModal } from "../Components/EmployeeModal/DeleteEmployee";
 import { ViewEmployeeModal } from "../Components/EmployeeModal/ViewEmploye";
 import { Pagination } from "../Components/Pagination";
+import { TableSkeleton } from "../Components/UI/TableSkeleton";
 
 export default function EmployeesPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,7 +35,7 @@ export default function EmployeesPage() {
     null,
   );
 
-  const { data, isError, error, refetch } = useGetEmployeesQuery({
+  const { data, isLoading, isError, error, refetch } = useGetEmployeesQuery({
     page,
     limit: 10,
     sort,
@@ -179,7 +180,9 @@ export default function EmployeesPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredEmployees.length > 0 ? (
+                {isLoading ? (
+                  <TableSkeleton columns={5} />
+                ) : filteredEmployees.length > 0 ? (
                   filteredEmployees.map((emp) => (
                     <tr
                       key={emp._id}

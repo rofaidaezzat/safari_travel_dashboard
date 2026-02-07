@@ -13,6 +13,7 @@ import { DeleteApplicationModal } from "../Components/ApplicationModal/DeleteApp
 import { ViewApplicationModal } from "../Components/ApplicationModal/ViewApplication";
 import { AssignApplicationModal } from "../Components/ApplicationModal/AssignApplication";
 import { UpdateAssignmentStatusModal } from "../Components/UpdateAssignmentStatusModal";
+import { TableSkeleton } from "../Components/UI/TableSkeleton";
 
 interface ApplicationWithAssignment extends Application {
   assignmentId?: string;
@@ -41,13 +42,13 @@ export default function ApplicationPage() {
   const isEmployee = role === "Employee";
 
   // Fetch all applications (for Admin)
-  const { data: allAppsData, isError: isAppsError, error: appsError, refetch: refetchApps } = useGetApplicationsQuery(
+  const { data: allAppsData, isLoading: isAppsLoading, isError: isAppsError, error: appsError, refetch: refetchApps } = useGetApplicationsQuery(
     { page, limit: 10, sort },
     { skip: isEmployee }
   );
 
   // Fetch assigned applications (for Employee)
-  const { data: assignmentsData, isError: isAssignError, error: assignError, refetch: refetchAssign } = useGetMyAssignmentsQuery(
+  const { data: assignmentsData, isLoading: isAssignLoading, isError: isAssignError, error: assignError, refetch: refetchAssign } = useGetMyAssignmentsQuery(
     { page, limit: 10 },
     { skip: !isEmployee }
   );
@@ -55,11 +56,13 @@ export default function ApplicationPage() {
   let applications: ApplicationWithAssignment[] = [];
   let pagination = { currentPage: 1, numberOfPages: 1 };
   let isError = false;
+  let isLoading = false;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let error: any = null;
   let refetch = () => {};
 
   if (isEmployee) {
+    isLoading = isAssignLoading;
     const assignedApps = assignmentsData?.data.assignments
       .filter((item) => item.item_type === "Application")
       .map((item) => {
@@ -80,6 +83,7 @@ export default function ApplicationPage() {
     })) || [];
 
     pagination = allAppsData?.pagination || { currentPage: 1, numberOfPages: 1, limit: 10 };
+    isLoading = isAppsLoading;
     isError = isAppsError;
     error = appsError;
     refetch = refetchApps;
@@ -178,7 +182,9 @@ export default function ApplicationPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredApplications.length > 0 ? (
+                {isLoading ? (
+                  <TableSkeleton columns={7} />
+                ) : filteredApplications.length > 0 ? (
                   filteredApplications.map((app) => (
                     <tr key={app._id} className="border-t border-border hover:bg-muted/30 transition-colors">
                       <td className="py-4 px-6">
