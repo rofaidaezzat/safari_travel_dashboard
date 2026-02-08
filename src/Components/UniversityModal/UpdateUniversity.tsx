@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { X, Upload } from "lucide-react";
 import { Input } from "../UI/Input";
+import { Select } from "../UI/Select";
 import { Button } from "../UI/Button";
 import { type University, useUpdateUniversityMutation } from "../../app/services/crudUniversity";
 import { updateUniversitySchema } from "../../validation/schemas";
@@ -275,11 +276,17 @@ export function UpdateUniversityModal({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
                 <label className="text-sm font-medium">Country</label>
-                <Input
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                placeholder="e.g. Turkey"
-                />
+                <Select
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                >
+                  <option value="" disabled>Select a country</option>
+                  {["All", "UK", "Canada", "USA", "Turkey", "Malaysia", "Uzbekistan", "Tajikistan"].map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </Select>
                 {errors.country && <p className="text-red-500 text-xs">{errors.country}</p>}
             </div>
              <div className="space-y-1">
