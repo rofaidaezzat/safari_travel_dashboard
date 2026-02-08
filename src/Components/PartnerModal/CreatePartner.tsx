@@ -21,7 +21,6 @@ export function CreatePartnerModal({
   const [createPartner, { isLoading }] = useCreatePartnerMutation();
 
   const [name, setName] = useState("");
-  const [logo, setLogo] = useState(""); // URL or path
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState("");
   const [website, setWebsite] = useState("");
@@ -43,7 +42,6 @@ export function CreatePartnerModal({
       
       // TODO: Upload file to server and get URL
       // For now, we'll use the file name as placeholder
-      setLogo(file.name);
     }
   };
 
@@ -69,7 +67,6 @@ export function CreatePartnerModal({
       });
       // Reset form
       setName("");
-      setLogo("");
       setLogoFile(null);
       setLogoPreview("");
       setWebsite("");

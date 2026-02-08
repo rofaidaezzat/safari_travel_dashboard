@@ -38,7 +38,7 @@ interface ApplicationsResponse {
 export const applicationsApi = createApi({
     reducerPath: "applicationsApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "https://lavishly-fogless-sang.ngrok-free.dev/",
+        baseUrl: "https://api.wasil-edu.com/",
         prepareHeaders: (headers) => {
             const token = localStorage.getItem("accessToken");
             if (token && token !== "undefined") {

@@ -23,7 +23,7 @@ export default function EmployeesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState("-createdAt");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const { toast } = useToast();
 

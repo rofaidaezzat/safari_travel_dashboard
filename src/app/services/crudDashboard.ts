@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const baseUrl = "https://lavishly-fogless-sang.ngrok-free.dev/api/v1/admin/dashboard";
+const baseUrl = "https://api.wasil-edu.com/api/v1/admin/dashboard";
 
 export interface DashboardCounts {
     totalEmployees: number;

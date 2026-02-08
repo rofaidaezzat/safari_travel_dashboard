@@ -38,7 +38,7 @@ interface TravelsResponse {
 export const travelApi = createApi({
     reducerPath: "travelApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "https://lavishly-fogless-sang.ngrok-free.dev/",
+        baseUrl: "https://api.wasil-edu.com/",
         prepareHeaders: (headers) => {
             const token = localStorage.getItem("accessToken");
 
@@ -69,7 +69,7 @@ export const travelApi = createApi({
             TravelsResponse,
             { page?: number; limit?: number; search?: string; type?: string; sort?: string } | void
         >({
-            queryFn: async (params, { getState }, _extraOptions, baseQuery) => {
+            queryFn: async (params, _api, _extraOptions, baseQuery) => {
                 const page = params?.page ?? 1;
                 const limit = params?.limit ?? 10;
                 const search = params?.search;

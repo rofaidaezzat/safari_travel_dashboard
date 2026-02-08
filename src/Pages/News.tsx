@@ -15,7 +15,7 @@ import { TableSkeleton } from "../Components/UI/TableSkeleton";
 const NewsPage = () => {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
+  
   
   // Modals state
   const [showCreate, setShowCreate] = useState(false);

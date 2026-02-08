@@ -8,7 +8,6 @@ import { useCreateUniversityMutation } from "../../app/services/crudUniversity";
 import { createUniversitySchema } from "../../validation/schemas";
 import { ValidationError } from "yup";
 import { useToast } from "../../hooks/use-toast";
-
 interface CreateUniversityModalProps {
   open: boolean;
   onClose: () => void;
@@ -107,8 +106,7 @@ export function CreateUniversityModal({
         formData.append("images", file);
       });
 
-      await createUniversity(formData).unwrap();
-      
+      await createUniversity(formData).unwrap();  
       toast({
         title: "University created",
         description: `University ${name} has been created successfully.`,
