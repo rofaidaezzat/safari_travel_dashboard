@@ -186,7 +186,7 @@ export default function ApplicationPage() {
                   <TableSkeleton columns={7} />
                 ) : filteredApplications.length > 0 ? (
                   filteredApplications.map((app) => (
-                    <tr key={app._id} className="border-t border-border hover:bg-muted/30 transition-colors">
+                    <tr key={app._id} className={`border-t border-border transition-colors ${app.is_assigned ? "bg-blue-500/10 hover:bg-blue-500/20" : "hover:bg-muted/30"}`}>
                       <td className="py-4 px-6">
                         <span className="font-medium">{app.fullName}</span>
                       </td>

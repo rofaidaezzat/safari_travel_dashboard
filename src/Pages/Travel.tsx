@@ -214,7 +214,7 @@ const Travel = () => {
                     travels.map((travel) => (
                     <tr
                       key={travel._id}
-                      className="border-t border-border hover:bg-muted/30 transition-colors"
+                      className={`border-t border-border transition-colors ${travel.is_assigned ? "bg-blue-500/10 hover:bg-blue-500/20" : "hover:bg-muted/30"}`}
                     >
                       <td className="py-4 px-6">
                         <div className="flex flex-col">
