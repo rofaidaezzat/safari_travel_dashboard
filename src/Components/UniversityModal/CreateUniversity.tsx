@@ -88,7 +88,7 @@ export function CreateUniversityModal({
 
       // TODO: Upload images to server and get URLs
       // For now we map files to their names as a placeholder
-      const imageUrls = imageFiles.map(file => file.name);
+
 
       const formData = new FormData();
       formData.append("name", name);

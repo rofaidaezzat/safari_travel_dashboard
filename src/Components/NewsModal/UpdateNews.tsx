@@ -28,7 +28,7 @@ export function UpdateNewsModal({ open, news, onClose }: UpdateNewsModalProps) {
         setTags(news.tags ? news.tags.join(", ") : "");
         setContent(news.content);
         setAuthor(news.author);
-        setPreview(news.coverImage);
+        setPreview(news.coverImage ?? null);
         setImage(null);
     }
   }, [news]);
