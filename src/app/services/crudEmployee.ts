@@ -93,8 +93,8 @@ export const employeesApi = createApi({
         url: `api/v1/employees/${id}`,
       }),
       providesTags: (_result, _error, id) => [{ type: "Employee", id }],
-      transformResponse: (response: { data: { employee: Employee } }) =>
-        response.data.employee,
+      transformResponse: (response: { data: Employee }) =>
+        response.data,
     }),
 
     updateEmployee: builder.mutation<
