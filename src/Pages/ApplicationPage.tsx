@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Plus, Edit, Trash2, Eye, UserPlus } from "lucide-react";
+import { Search, Plus, Edit, Trash2, Eye, UserPlus, Download } from "lucide-react";
 import { DashboardLayout } from "../Components/DashboardLayout";
 import { Button } from "../Components/UI/Button";
 import { Input } from "../Components/UI/Input";
@@ -24,6 +24,9 @@ export default function ApplicationPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState("-createdAt");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -88,12 +91,50 @@ export default function ApplicationPage() {
     error = appsError;
     refetch = refetchApps;
   }
-  const filteredApplications = applications.filter((app) =>
-    app.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    app.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    app.desiredMajor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    app.desiredCountry.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredApplications = applications.filter((app) => {
+    const matchesSearch =
+      app.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.desiredMajor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.desiredCountry.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus = statusFilter === "" || (app.status || "Pending") === statusFilter;
+
+    const appDate = new Date(app.createdAt);
+    const matchesStart = startDate === "" || appDate >= new Date(startDate);
+    const matchesEnd = endDate === "" || appDate <= new Date(endDate + "T23:59:59");
+
+    return matchesSearch && matchesStatus && matchesStart && matchesEnd;
+  });
+
+  const handleExportExcel = () => {
+    const headers = ["Name", "Email", "Major", "Country", "Nationality", "Passport No.", "Graduation Year", "HS Grade", "Desired University", "Status", "Created At"];
+    const rows = filteredApplications.map((app) => [
+      app.fullName,
+      app.email,
+      app.desiredMajor,
+      app.desiredCountry,
+      app.nationality,
+      app.passportNumber,
+      app.graduationYear,
+      app.highSchoolGrade,
+      app.desiredUniversity,
+      app.status || "Pending",
+      new Date(app.createdAt).toLocaleDateString(),
+    ]);
+
+    const csvContent = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `applications_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
   const handleOpenUpdate = (app: Application) => {
     setSelectedApplication(app);
     setShowUpdate(true);
@@ -138,24 +179,88 @@ export default function ApplicationPage() {
           </Button>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search applications..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 rounded-xl"
-            />
+        <div className="flex flex-col gap-4">
+          {/* Row 1: Search + Sort */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search applications..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 rounded-xl"
+              />
+            </div>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="h-10 px-3 rounded-xl border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <option value="-createdAt">Newest</option>
+              <option value="createdAt">Oldest</option>
+            </select>
           </div>
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            <option value="-createdAt">Newest</option>
-            <option value="createdAt">Oldest</option>
-          </select>
+
+          {/* Row 2: Status Filter + Date Range + Export Button */}
+          <div className="flex flex-col sm:flex-row gap-4 items-end">
+            {/* Status Filter */}
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground font-medium">Status</label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="h-10 px-3 rounded-xl border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <option value="">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            {/* Start Date */}
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground font-medium">Start Date</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="h-10 px-3 rounded-xl border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              />
+            </div>
+
+            {/* End Date */}
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground font-medium">End Date</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="h-10 px-3 rounded-xl border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              />
+            </div>
+
+            {/* Clear Filters */}
+            {(statusFilter || startDate || endDate) && (
+              <button
+                onClick={() => { setStatusFilter(""); setStartDate(""); setEndDate(""); }}
+                className="h-10 px-4 rounded-xl border border-input bg-background text-sm hover:bg-muted transition-colors text-muted-foreground"
+              >
+                Clear Filters
+              </button>
+            )}
+
+            {/* Export Excel Button */}
+            <button
+              onClick={handleExportExcel}
+              disabled={filteredApplications.length === 0}
+              className="h-10 px-4 rounded-xl bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium flex items-center gap-2 transition-colors ml-auto"
+            >
+              <Download className="h-4 w-4" />
+              Export Excel
+            </button>
+          </div>
         </div>
 
 
