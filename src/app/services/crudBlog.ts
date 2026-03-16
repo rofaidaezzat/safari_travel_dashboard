@@ -7,6 +7,7 @@ export interface Blog {
     content: string;
     author: string;
     tags: string[];
+    videoUrl?: string;
     is_active: boolean;
     createdAt: string;
     updatedAt: string;

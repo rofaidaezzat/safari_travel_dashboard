@@ -20,6 +20,7 @@ export function UpdateBlogModal({ open, blog, onClose }: UpdateBlogModalProps) {
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [tags, setTags] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -29,6 +30,7 @@ export function UpdateBlogModal({ open, blog, onClose }: UpdateBlogModalProps) {
         setContent(blog.content);
         setAuthor(blog.author);
         setTags(blog.tags.join(", "));
+        setVideoUrl(blog.videoUrl || "");
         setPreview(blog.coverImage);
         setCoverImage(null);
     }
@@ -54,9 +56,10 @@ export function UpdateBlogModal({ open, blog, onClose }: UpdateBlogModalProps) {
       formData.append("content", content);
       formData.append("author", author);
       
-      // Process tags
       const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== "");
       tagsArray.forEach((tag) => formData.append("tags[]", tag));
+
+      if (videoUrl) formData.append("videoUrl", videoUrl);
 
       if (coverImage) formData.append("coverImage", coverImage);
 
@@ -129,6 +132,15 @@ export function UpdateBlogModal({ open, blog, onClose }: UpdateBlogModalProps) {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Full blog content..."
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Video URL (Optional)</label>
+            <Input
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              placeholder="https://youtube.com/..."
             />
           </div>
 

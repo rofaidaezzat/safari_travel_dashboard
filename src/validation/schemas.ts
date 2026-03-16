@@ -102,6 +102,7 @@ export const createUniversitySchema = yup.object().shape({
     fees: yup.string().required("Fees are required"),
     admissionRequirements: yup.string().required("Requirements are required"),
     images: yup.array().of(yup.string()).optional(),
+    videoUrl: yup.string().url("Invalid URL").optional(),
 });
 
 export const updateUniversitySchema = yup.object().shape({
@@ -113,4 +114,5 @@ export const updateUniversitySchema = yup.object().shape({
     admissionRequirements: yup.string().optional(),
     images: yup.array().of(yup.string()).optional(),
     imagesToDelete: yup.array().of(yup.number().integer().min(0)).optional(),
+    videoUrl: yup.string().url("Invalid URL").optional(),
 });

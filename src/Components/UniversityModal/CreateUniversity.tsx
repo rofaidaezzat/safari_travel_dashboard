@@ -26,6 +26,7 @@ export function CreateUniversityModal({
   const [description, setDescription] = useState("");
   const [admissionRequirements, setAdmissionRequirements] = useState("");
   const [programs, setPrograms] = useState(""); // Comma separated string for simple input
+  const [videoUrl, setVideoUrl] = useState("");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -79,6 +80,7 @@ export function CreateUniversityModal({
         description,
         admissionRequirements,
         programs: programsArray,
+        videoUrl: videoUrl || undefined,
         // images validation in yup is optional array of strings, but we have files here.
         // We can skip validating 'images' strictly via yup if it expects urls, or just validate existence if needed.
         // Schema says optional.
@@ -95,6 +97,7 @@ export function CreateUniversityModal({
       formData.append("fees", fees);
       formData.append("description", description);
       formData.append("admissionRequirements", admissionRequirements);
+      if (videoUrl) formData.append("videoUrl", videoUrl);
       
       // Append programs array
       programsArray.forEach(program => {
@@ -118,6 +121,7 @@ export function CreateUniversityModal({
       setDescription("");
       setAdmissionRequirements("");
       setPrograms("");
+      setVideoUrl("");
       setImageFiles([]);
       setImagePreviews([]);
       onClose();
@@ -262,6 +266,16 @@ export function CreateUniversityModal({
               onChange={(e) => setPrograms(e.target.value)}
               placeholder="Engineering, Medicine, Law..."
             />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Video URL (Optional)</label>
+            <Input
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              placeholder="https://youtube.com/..."
+            />
+            {errors.videoUrl && <p className="text-red-500 text-xs">{errors.videoUrl}</p>}
           </div>
 
           <div className="flex justify-end gap-2 pt-2 pb-4">

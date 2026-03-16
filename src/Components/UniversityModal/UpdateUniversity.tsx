@@ -36,6 +36,7 @@ export function UpdateUniversityModal({
   const [description, setDescription] = useState("");
   const [admissionRequirements, setAdmissionRequirements] = useState("");
   const [programs, setPrograms] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   
   // State to track existing images with their original server-side index
   const [existingImages, setExistingImages] = useState<ImageWithIndex[]>([]);
@@ -53,6 +54,7 @@ export function UpdateUniversityModal({
       setDescription(university.description);
       setAdmissionRequirements(university.admissionRequirements);
       setPrograms(university.programs?.join(", ") || "");
+      setVideoUrl(university.videoUrl || "");
       
       // Map images to include their original index
       const imagesWithIndices = (university.images || []).map((url, index) => ({
@@ -125,6 +127,7 @@ export function UpdateUniversityModal({
         description,
         admissionRequirements,
         programs: programsArray,
+        videoUrl: videoUrl || undefined,
         imagesToDelete
       }, { abortEarly: false });
       setErrors({});
@@ -135,6 +138,7 @@ export function UpdateUniversityModal({
       formData.append("fees", fees);
       formData.append("description", description);
       formData.append("admissionRequirements", admissionRequirements);
+      if (videoUrl) formData.append("videoUrl", videoUrl);
       
       // Append programs array
       programsArray.forEach(program => {
@@ -329,6 +333,16 @@ export function UpdateUniversityModal({
               onChange={(e) => setPrograms(e.target.value)}
               placeholder="Engineering, Medicine, Law..."
             />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Video URL (Optional)</label>
+            <Input
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              placeholder="https://youtube.com/..."
+            />
+            {errors.videoUrl && <p className="text-red-500 text-xs">{errors.videoUrl}</p>}
           </div>
 
           <div className="flex justify-end gap-2 pt-2 pb-4">

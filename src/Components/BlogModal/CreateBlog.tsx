@@ -19,6 +19,7 @@ export function CreateBlogModal({ open, onClose }: CreateBlogModalProps) {
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [tags, setTags] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -56,10 +57,11 @@ export function CreateBlogModal({ open, onClose }: CreateBlogModalProps) {
       formData.append("content", content);
       formData.append("author", author);
       
-      // Process tags (comma separated)
       const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== "");
       tagsArray.forEach((tag) => formData.append("tags[]", tag));
        
+      if (videoUrl) formData.append("videoUrl", videoUrl);
+
       if (coverImage) formData.append("coverImage", coverImage);
 
       await createBlog(formData).unwrap();
@@ -74,6 +76,7 @@ export function CreateBlogModal({ open, onClose }: CreateBlogModalProps) {
       setContent("");
       setAuthor("");
       setTags("");
+      setVideoUrl("");
       setCoverImage(null);
       setPreview(null);
       onClose();
@@ -143,6 +146,15 @@ export function CreateBlogModal({ open, onClose }: CreateBlogModalProps) {
               placeholder="Full blog content..."
             />
             {errors.content && <p className="text-red-500 text-xs">{errors.content}</p>}
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Video URL (Optional)</label>
+            <Input
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              placeholder="https://youtube.com/..."
+            />
           </div>
 
           <div className="space-y-1">

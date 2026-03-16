@@ -9,6 +9,7 @@ export interface University {
     fees: string;
     admissionRequirements: string;
     images: string[];
+    videoUrl?: string;
     slug?: string;
     createdAt?: string;
     updatedAt?: string;
