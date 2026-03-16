@@ -59,7 +59,7 @@ export function UpdateBlogModal({ open, blog, onClose }: UpdateBlogModalProps) {
       const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== "");
       tagsArray.forEach((tag) => formData.append("tags[]", tag));
 
-      if (videoUrl) formData.append("videoUrl", videoUrl);
+      if (videoUrl || blog.videoUrl) formData.append("videoUrl", videoUrl);
 
       if (coverImage) formData.append("coverImage", coverImage);
 
