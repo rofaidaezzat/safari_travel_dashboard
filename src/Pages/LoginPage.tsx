@@ -8,7 +8,7 @@ import { useToast } from "../hooks/use-toast";
 import { useLoginMutation } from "../app/services/crudAuth";
 import { loginEmployeeSchema } from "../validation/schemas";
 import { ValidationError } from "yup";
-import logo from "../assets/wasil-removebg-preview.png";
+import logo from "../assets/logo_safari-removebg-preview.png";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -122,7 +122,7 @@ export default function LoginPage() {
               className="mt-6 text-sm text-muted-foreground font-arabic max-w-xs"
               dir="rtl"
             >
-              لوحة تحكم واصل للخدمات الطلابية
+              لوحة تحكم سفاري للخدمات الطلابية
             </p>
           </div>
 
