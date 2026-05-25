@@ -33,7 +33,7 @@ interface UniversitiesResponse {
 export const universitiesApi = createApi({
     reducerPath: "universitiesApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "https://api.wasil-edu.com/",
+        baseUrl: "https://safary-kappa.vercel.app/",
         prepareHeaders: (headers) => {
             const token = localStorage.getItem("accessToken");
             if (token && token !== "undefined") {

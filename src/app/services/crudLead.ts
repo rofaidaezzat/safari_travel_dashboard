@@ -29,7 +29,7 @@ interface LeadsResponse {
 export const leadsApi = createApi({
     reducerPath: "leadsApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "https://api.wasil-edu.com/",
+        baseUrl: "https://safary-kappa.vercel.app/",
         prepareHeaders: (headers) => {
             const token = localStorage.getItem("accessToken");
             if (token && token !== "undefined") {

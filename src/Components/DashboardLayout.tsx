@@ -72,7 +72,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="p-6 border-b border-[#4b5ca0]">
-            <img src={logo} alt="Wasil Logo" />
+            <img src={logo} alt="Safari Logo" />
           </div>
 
           {/* Navigation */}
@@ -134,7 +134,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <p className="text-sm font-medium">{localStorage.getItem("name") || "Admin User"}</p>
-                <p className="text-xs text-muted-foreground">{localStorage.getItem("email") || "admin@wasil.edu"}</p>
+                <p className="text-xs text-muted-foreground">{localStorage.getItem("email") || "admin@safari.edu"}</p>
               </div>
               <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center text-primary-foreground font-medium">
                 {localStorage.getItem("name")?.charAt(0).toUpperCase() || "A"}

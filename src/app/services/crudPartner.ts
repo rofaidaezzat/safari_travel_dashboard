@@ -28,7 +28,7 @@ interface PartnersResponse {
 export const partnersApi = createApi({
     reducerPath: "partnersApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "https://api.wasil-edu.com/",
+        baseUrl: "https://safary-kappa.vercel.app/",
         prepareHeaders: (headers) => {
             const token = localStorage.getItem("accessToken");
             if (token && token !== "undefined") {

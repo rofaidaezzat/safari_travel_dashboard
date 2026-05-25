@@ -113,7 +113,7 @@ export default function LoginPage() {
               <div className="absolute inset-0 -z-10 rounded-full bg-primary/10 blur-3xl" />
               <img
                 src={logo}
-                alt="Wasil Logo"
+                alt="Safari Logo"
                 className="w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] lg:w-[340px] lg:h-[340px] object-contain drop-shadow-[0_30px_50px_rgba(0,0,0,0.25)]"
               />
             </motion.div>
@@ -162,7 +162,7 @@ export default function LoginPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         type="email"
                         autoComplete="email"
-                        placeholder="admin@wasil.edu"
+                        placeholder="admin@safari.edu"
                         className="pl-12 h-12 rounded-2xl"
                         required
                       />
