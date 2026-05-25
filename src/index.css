@@ -36,20 +36,20 @@
 
         /* Custom Dashboard Colors */
         /* using HSL values for the provided hexcodes */
-        /* #2a1945 -> 263, 47%, 18% */
-        --sidebar-background: 263 47% 18%;
+        /* #0b122c -> 227, 60%, 11% */
+        --sidebar-background: 227 60% 11%;
         --sidebar-foreground: 0 0% 100%;
 
-        /* #3f55a6 -> 227, 45%, 45% */
-        --sidebar-primary: 227 45% 45%;
+        /* #013298 -> 221, 99%, 30% */
+        --sidebar-primary: 221 99% 30%;
         --sidebar-primary-foreground: 0 0% 100%;
 
-        /* #3e55a5 -> 227, 45%, 45% (Very similar to primary, maybe use for accent/hover) */
-        --sidebar-accent: 227 45% 45%;
+        /* #0a3ca8 -> 221, 89%, 35% */
+        --sidebar-accent: 221 89% 35%;
         --sidebar-accent-foreground: 0 0% 100%;
 
-        /* #4b5ca0 -> 228, 36%, 46% */
-        --sidebar-border: 228 36% 46%;
+        /* #1d2d5f -> 225, 53%, 24% */
+        --sidebar-border: 225 53% 24%;
 
         /* #9a90a6 -> 267, 10%, 61% */
         --chart-1: 267 10% 61%;
@@ -87,13 +87,13 @@
         --ring: 212.7 26.8% 83.9%;
 
         /* Reuse same colors for sidebar in dark mode or adjust if needed */
-        --sidebar-background: 263 47% 18%;
+        --sidebar-background: 227 60% 11%;
         --sidebar-foreground: 0 0% 100%;
-        --sidebar-primary: 227 45% 45%;
+        --sidebar-primary: 221 99% 30%;
         --sidebar-primary-foreground: 0 0% 100%;
-        --sidebar-accent: 227 45% 45%;
+        --sidebar-accent: 221 89% 35%;
         --sidebar-accent-foreground: 0 0% 100%;
-        --sidebar-border: 228 36% 46%;
+        --sidebar-border: 225 53% 24%;
     }
 }
 

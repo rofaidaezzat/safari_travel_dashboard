@@ -65,13 +65,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-72 bg-[#2a1945] transform transition-transform duration-300 ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-72 bg-[#0b122c] transform transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-[#4b5ca0]">
+          <div className="p-6 border-b border-[#1d2d5f]">
             <img src={logo} alt="Safari Logo" />
           </div>
 
@@ -86,8 +86,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   onClick={() => setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                     isActive
-                      ? "bg-[#3f55a6] text-white"
-                      : "text-white/70 hover:bg-[#3e55a5] hover:text-white"
+                      ? "bg-[#013298] text-white"
+                      : "text-white/70 hover:bg-[#0a3ca8] hover:text-white"
                   }`}
                 >
                   <item.icon className="h-5 w-5" />
@@ -99,10 +99,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </nav>
 
           {/* Logout */}
-          <div className="p-4 border-t border-[#4b5ca0]">
+          <div className="p-4 border-t border-[#1d2d5f]">
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-[#3e55a5] hover:text-white transition-colors w-full"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-[#0a3ca8] hover:text-white transition-colors w-full"
             >
               <LogOut className="h-5 w-5" />
               <span className="font-medium">Logout</span>

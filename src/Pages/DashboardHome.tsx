@@ -233,7 +233,7 @@ export default function DashboardHome() {
                 <XAxis dataKey="status" stroke="#6b7280" />
                 <YAxis stroke="#6b7280" />
                 <Tooltip />
-                <Bar dataKey="count" fill="#3f55a6" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="count" fill="#013298" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </motion.div>

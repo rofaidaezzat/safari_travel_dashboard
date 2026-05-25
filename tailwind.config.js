@@ -49,13 +49,13 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         sidebar: {
-          DEFAULT: "#2a1945", // Deep Purple
+          DEFAULT: "#0b122c", // Deep Navy Blue
           foreground: "#ffffff",
-          primary: "#3f55a6", // Medium Blue/Purple
+          primary: "#013298", // Vivid Royal Blue
           "primary-foreground": "#ffffff",
-          accent: "#3e55a5", // Similar to primary
+          accent: "#0a3ca8", // Accent Blue
           "accent-foreground": "#ffffff",
-          border: "#4b5ca0", // Lighter Purple
+          border: "#1d2d5f", // Navy border
           ring: "#9a90a6",
         },
       },

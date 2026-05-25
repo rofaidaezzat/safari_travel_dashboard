@@ -210,7 +210,7 @@ export default function LoginPage() {
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full h-12 rounded-2xl bg-gradient-to-r from-[#3f55a6] via-[#4b5ca0] to-[#2a1945] hover:brightness-105 text-base shadow-lg shadow-[#3f55a6]/20 focus-visible:ring-2 focus-visible:ring-[#3f55a6]/40"
+                    className="w-full h-12 rounded-2xl bg-gradient-to-r from-[#013298] via-[#1d2d5f] to-[#0b122c] hover:brightness-105 text-base shadow-lg shadow-[#013298]/20 focus-visible:ring-2 focus-visible:ring-[#013298]/40"
                   >
                     {isLoading ? "Signing in..." : "Sign in"}
                   </Button>
