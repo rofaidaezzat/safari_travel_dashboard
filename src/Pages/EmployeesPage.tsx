@@ -134,7 +134,6 @@ export default function EmployeesPage() {
           >
             <option value="">All Roles</option>
             <option value="Admin">Admin</option>
-            <option value="Manager">Manager</option>
             <option value="Employee">Employee</option>
           </select>
           <select
