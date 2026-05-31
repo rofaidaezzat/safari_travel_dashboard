@@ -12,7 +12,6 @@ import {
   Menu,
   ChevronRight,
   UserCheck,
-  Plane,
   Newspaper,
   PenTool,
 } from "lucide-react";
@@ -28,11 +27,9 @@ const menuItems = [
   { icon: BookOpen, label: "Partner", href: "/dashboard/partner" },
 
   { icon: FileText, label: "Applications", href: "/dashboard/applications" },
- 
-  { icon: Plane, label: "Travel", href: "/dashboard/travel" },
   { icon: Newspaper, label: "News", href: "/dashboard/news" },
   { icon: PenTool, label: "Blog", href: "/dashboard/blog" },
-   { icon: UserCheck, label: "Leads", href: "/dashboard/leads" },
+  { icon: UserCheck, label: "Leads", href: "/dashboard/leads" },
 ];
 
 interface DashboardLayoutProps {
@@ -47,7 +44,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const filteredMenuItems = menuItems.filter((item) => {
     if (role === "Employee") {
-      return ["Applications", "Travel"].includes(item.label);
+      return item.label === "Applications";
     }
     return true;
   });
