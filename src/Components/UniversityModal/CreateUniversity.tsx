@@ -5,6 +5,7 @@ import { Input } from "../UI/Input";
 import { Select } from "../UI/Select";
 import { Button } from "../UI/Button";
 import { useCreateUniversityMutation } from "../../app/services/crudUniversity";
+import { useGetCoursesQuery } from "../../app/services/crudCourse";
 import { createUniversitySchema } from "../../validation/schemas";
 import { ValidationError } from "yup";
 import { useToast } from "../../hooks/use-toast";
@@ -19,6 +20,7 @@ export function CreateUniversityModal({
 }: CreateUniversityModalProps) {
   const { toast } = useToast();
   const [createUniversity, { isLoading }] = useCreateUniversityMutation();
+  const { data: coursesData } = useGetCoursesQuery({ limit: 100 });
 
   const [name, setName] = useState("");
   const [country, setCountry] = useState("");
@@ -27,9 +29,16 @@ export function CreateUniversityModal({
   const [admissionRequirements, setAdmissionRequirements] = useState("");
   const [programs, setPrograms] = useState(""); // Comma separated string for simple input
   const [videoUrl, setVideoUrl] = useState("");
+  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleCourseToggle = (id: string) => {
+    setSelectedCourses((prev) =>
+      prev.includes(id) ? prev.filter((courseId) => courseId !== id) : [...prev, id]
+    );
+  };
 
   if (!open) return null;
 
@@ -104,6 +113,11 @@ export function CreateUniversityModal({
         formData.append("programs[]", program);
       });
 
+      // Append selected courses
+      selectedCourses.forEach(courseId => {
+        formData.append("courses[]", courseId);
+      });
+
       // Append image files
       imageFiles.forEach((file) => {
         formData.append("images", file);
@@ -122,6 +136,7 @@ export function CreateUniversityModal({
       setAdmissionRequirements("");
       setPrograms("");
       setVideoUrl("");
+      setSelectedCourses([]);
       setImageFiles([]);
       setImagePreviews([]);
       onClose();
@@ -276,6 +291,27 @@ export function CreateUniversityModal({
               placeholder="https://youtube.com/..."
             />
             {errors.videoUrl && <p className="text-red-500 text-xs">{errors.videoUrl}</p>}
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Associated Courses</label>
+            <div className="border border-border rounded-xl p-3 max-h-40 overflow-y-auto space-y-2 bg-muted/10">
+              {coursesData?.data?.courses && coursesData.data.courses.length > 0 ? (
+                coursesData.data.courses.map((course) => (
+                  <label key={course._id} className="flex items-center gap-2 text-sm cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={selectedCourses.includes(course._id)}
+                      onChange={() => handleCourseToggle(course._id)}
+                      className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4"
+                    />
+                    <span>{course.title}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-xs text-muted-foreground text-center py-2">No courses found</p>
+              )}
+            </div>
           </div>
 
           <div className="flex justify-end gap-2 pt-2 pb-4">

@@ -14,6 +14,7 @@ import {
   UserCheck,
   Newspaper,
   PenTool,
+  Book,
 } from "lucide-react";
 
 const menuItems = [
@@ -24,6 +25,7 @@ const menuItems = [
     label: "Universities",
     href: "/dashboard/universities",
   },
+  { icon: Book, label: "Courses", href: "/dashboard/courses" },
   { icon: BookOpen, label: "Partner", href: "/dashboard/partner" },
 
   { icon: FileText, label: "Applications", href: "/dashboard/applications" },

@@ -5,6 +5,7 @@ import { Input } from "../UI/Input";
 import { Select } from "../UI/Select";
 import { Button } from "../UI/Button";
 import { type University, useUpdateUniversityMutation } from "../../app/services/crudUniversity";
+import { useGetCoursesQuery } from "../../app/services/crudCourse";
 import { updateUniversitySchema } from "../../validation/schemas";
 import { ValidationError } from "yup";
 import { useToast } from "../../hooks/use-toast";
@@ -27,6 +28,7 @@ export function UpdateUniversityModal({
 }: UpdateUniversityModalProps) {
   const { toast } = useToast();
   const [updateUniversity, { isLoading: isUpdating }] = useUpdateUniversityMutation();
+  const { data: coursesData } = useGetCoursesQuery({ limit: 100 });
   
   const isLoading = isUpdating;
 
@@ -44,7 +46,14 @@ export function UpdateUniversityModal({
   
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleCourseToggle = (id: string) => {
+    setSelectedCourses((prev) =>
+      prev.includes(id) ? prev.filter((courseId) => courseId !== id) : [...prev, id]
+    );
+  };
 
   useEffect(() => {
     if (university) {
@@ -62,6 +71,10 @@ export function UpdateUniversityModal({
         originalIndex: index
       }));
       setExistingImages(imagesWithIndices);
+      
+      setSelectedCourses(
+        university.courses ? university.courses.map((c: any) => typeof c === "string" ? c : c._id) : []
+      );
       
       setImagesToDelete([]);
       setNewImageFiles([]);
@@ -143,6 +156,11 @@ export function UpdateUniversityModal({
       // Append programs array
       programsArray.forEach(program => {
         formData.append("programs[]", program);
+      });
+
+      // Append selected courses
+      selectedCourses.forEach(courseId => {
+        formData.append("courses[]", courseId);
       });
 
       // Append images to delete (indices)
@@ -343,6 +361,27 @@ export function UpdateUniversityModal({
               placeholder="https://youtube.com/..."
             />
             {errors.videoUrl && <p className="text-red-500 text-xs">{errors.videoUrl}</p>}
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Associated Courses</label>
+            <div className="border border-border rounded-xl p-3 max-h-40 overflow-y-auto space-y-2 bg-muted/10">
+              {coursesData?.data?.courses && coursesData.data.courses.length > 0 ? (
+                coursesData.data.courses.map((course) => (
+                  <label key={course._id} className="flex items-center gap-2 text-sm cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={selectedCourses.includes(course._id)}
+                      onChange={() => handleCourseToggle(course._id)}
+                      className="rounded border-gray-300 text-primary focus:ring-primary h-4 w-4"
+                    />
+                    <span>{course.title}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-xs text-muted-foreground text-center py-2">No courses found</p>
+              )}
+            </div>
           </div>
 
           <div className="flex justify-end gap-2 pt-2 pb-4">

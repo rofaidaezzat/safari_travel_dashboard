@@ -116,3 +116,19 @@ export const updateUniversitySchema = yup.object().shape({
     imagesToDelete: yup.array().of(yup.number().integer().min(0)).optional(),
     videoUrl: yup.string().url("Invalid URL").optional(),
 });
+
+// --- Course Schemas ---
+
+export const createCourseSchema = yup.object().shape({
+    title: yup.string().required("Title is required"),
+    description: yup.string().required("Description is required"),
+    tags: yup.array().of(yup.string()).optional(),
+    universities: yup.array().of(yup.string()).optional(),
+});
+
+export const updateCourseSchema = yup.object().shape({
+    title: yup.string().optional(),
+    description: yup.string().optional(),
+    tags: yup.array().of(yup.string()).optional(),
+    universities: yup.array().of(yup.string()).optional(),
+});

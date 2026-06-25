@@ -11,6 +11,7 @@ export interface University {
     images: string[];
     videoUrl?: string;
     slug?: string;
+    courses?: string[];
     createdAt?: string;
     updatedAt?: string;
 }

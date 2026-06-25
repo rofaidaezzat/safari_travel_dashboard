@@ -280,6 +280,7 @@ export default function ApplicationPage() {
                   <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Email</th>
                   <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Major</th>
                   <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Country</th>
+                  <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">University</th>
       
                   <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Created</th>
                   <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Status</th>
@@ -288,7 +289,7 @@ export default function ApplicationPage() {
               </thead>
               <tbody>
                 {isLoading ? (
-                  <TableSkeleton columns={7} />
+                  <TableSkeleton columns={8} />
                 ) : filteredApplications.length > 0 ? (
                   filteredApplications.map((app) => (
                     <tr key={app._id} className={`border-t border-border transition-colors ${app.is_assigned ? "bg-blue-500/10 hover:bg-blue-500/20" : "hover:bg-muted/30"}`}>
@@ -298,6 +299,11 @@ export default function ApplicationPage() {
                       <td className="py-4 px-6 text-muted-foreground">{app.email}</td>
                       <td className="py-4 px-6 text-muted-foreground">{app.desiredMajor}</td>
                       <td className="py-4 px-6 text-muted-foreground">{app.desiredCountry}</td>
+                      <td className="py-4 px-6 text-muted-foreground">
+                        {typeof app.desiredUniversity === "object" && app.desiredUniversity !== null
+                          ? (app.desiredUniversity as any).name
+                          : app.desiredUniversity || "-"}
+                      </td>
                      
                      
                       <td className="py-4 px-6 text-muted-foreground">
@@ -350,7 +356,7 @@ export default function ApplicationPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="py-8 text-center text-muted-foreground">
+                    <td colSpan={8} className="py-8 text-center text-muted-foreground">
                        {isError ? (
                           <div className="flex flex-col items-center gap-2">
                             <span>

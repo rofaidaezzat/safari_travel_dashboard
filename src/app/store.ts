@@ -11,6 +11,7 @@ import { travelApi } from "./services/crudTravel";
 import { newsApi } from "./services/crudNews";
 import { blogApi } from "./services/crudBlog";
 import { assignmentsApi } from "./services/crudAssignment";
+import { coursesApi } from "./services/crudCourse";
 
 export const store = configureStore({
   reducer: {
@@ -25,6 +26,7 @@ export const store = configureStore({
     [newsApi.reducerPath]: newsApi.reducer,
     [blogApi.reducerPath]: blogApi.reducer,
     [assignmentsApi.reducerPath]: assignmentsApi.reducer,
+    [coursesApi.reducerPath]: coursesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -39,6 +41,7 @@ export const store = configureStore({
       newsApi.middleware,
       blogApi.middleware,
       assignmentsApi.middleware,
+      coursesApi.middleware,
     ),
 });
 
