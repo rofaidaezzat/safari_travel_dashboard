@@ -55,13 +55,17 @@ export function UpdateAssignmentStatusModal({
     // Check if user is Admin
     const role = localStorage.getItem("role");
     
-    // Case 1: Admin Update (Updates Item Status directly)
+    // Case 1: Admin Update (Updates via Assignment if assigned, otherwise updates Item Status directly)
     if (role === "Admin" && itemId && itemType) {
         try {
-            if (itemType === "Travel") {
-                await updateTravelStatus({ id: itemId, status }).unwrap();
+            if (assignmentId) {
+                await updateStatus({ id: assignmentId, status }).unwrap();
             } else {
-                await updateApplicationStatus({ id: itemId, status }).unwrap();
+                if (itemType === "Travel") {
+                    await updateTravelStatus({ id: itemId, status }).unwrap();
+                } else {
+                    await updateApplicationStatus({ id: itemId, status }).unwrap();
+                }
             }
             toast({
                 title: "Status Updated",
@@ -153,8 +157,12 @@ export function UpdateAssignmentStatusModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      onClick={onClose}
+    >
       <motion.div
+        onClick={(e) => e.stopPropagation()}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}

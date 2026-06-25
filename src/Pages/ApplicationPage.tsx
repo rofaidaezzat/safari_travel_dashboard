@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Plus, Edit, Trash2, Eye, UserPlus, Download } from "lucide-react";
+import { Search, Plus, Trash2, Eye, UserPlus, Download } from "lucide-react";
 import { DashboardLayout } from "../Components/DashboardLayout";
 import { Button } from "../Components/UI/Button";
 import { Input } from "../Components/UI/Input";
 import { Pagination } from "../Components/Pagination";
 import { useGetApplicationsQuery, type Application } from "../app/services/crudApplication";
-import { useGetMyAssignmentsQuery } from "../app/services/crudAssignment";
+import { useGetMyAssignmentsQuery, useGetAllAssignmentsQuery } from "../app/services/crudAssignment";
+import { useGetUniversitiesQuery } from "../app/services/crudUniversity";
 import { CreateApplicationModal } from "../Components/ApplicationModal/CreateApplication";
-import { UpdateApplicationStatusModal } from "../Components/ApplicationModal/UpdateApplicationStatus";
 import { DeleteApplicationModal } from "../Components/ApplicationModal/DeleteApplication";
 import { ViewApplicationModal } from "../Components/ApplicationModal/ViewApplication";
 import { AssignApplicationModal } from "../Components/ApplicationModal/AssignApplication";
@@ -28,7 +28,6 @@ export default function ApplicationPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showCreate, setShowCreate] = useState(false);
-  const [showUpdate, setShowUpdate] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showView, setShowView] = useState(false);
   const [showAssign, setShowAssign] = useState(false);
@@ -55,6 +54,28 @@ export default function ApplicationPage() {
     { page, limit: 10 },
     { skip: !isEmployee }
   );
+
+  // Fetch all assignments (for Admin) to map assignment IDs
+  const { data: allAssignmentsData } = useGetAllAssignmentsQuery(
+    undefined,
+    { skip: isEmployee }
+  );
+
+  // Fetch universities to display names instead of IDs
+  const { data: universitiesData } = useGetUniversitiesQuery({ limit: 1000 });
+
+  const universityMap = new Map<string, string>();
+  universitiesData?.data?.universities?.forEach((uni) => {
+    universityMap.set(uni._id, uni.name);
+  });
+
+  const getUniversityName = (uni: any) => {
+    if (!uni) return "-";
+    if (typeof uni === "object" && uni !== null) {
+      return uni.name || "-";
+    }
+    return universityMap.get(uni) || uni || "-";
+  };
   
   let applications: ApplicationWithAssignment[] = [];
   let pagination = { currentPage: 1, numberOfPages: 1 };
@@ -79,11 +100,25 @@ export default function ApplicationPage() {
     error = assignError;
     refetch = refetchAssign;
   } else {
-    // For Admin, use applications directly
-    applications = allAppsData?.data.applications.map(app => ({
-        ...app,
-        assignmentStatus: app.status
-    })) || [];
+    // For Admin, use applications directly and map their assignment IDs
+    applications = allAppsData?.data.applications.map(app => {
+        // Find if this application has an assignment record in allAssignmentsData
+        const matchingAssignment = allAssignmentsData?.data?.assignments?.find(item => {
+            if (item.item_type !== "Application" || !item.item_id) return false;
+            if (typeof item.item_id === "object") {
+                return item.item_id._id === app._id;
+            }
+            return item.item_id === app._id;
+        });
+
+        const assignmentId = matchingAssignment?._id;
+
+        return {
+            ...app,
+            assignmentId,
+            assignmentStatus: app.status
+        };
+    }) || [];
 
     pagination = allAppsData?.pagination || { currentPage: 1, numberOfPages: 1, limit: 10 };
     isLoading = isAppsLoading;
@@ -135,10 +170,6 @@ export default function ApplicationPage() {
     link.click();
     URL.revokeObjectURL(url);
   };
-  const handleOpenUpdate = (app: Application) => {
-    setSelectedApplication(app);
-    setShowUpdate(true);
-  };
   const handleOpenDelete = (app: Application) => {
     setSelectedApplication(app);
     setShowDelete(true);
@@ -170,13 +201,15 @@ export default function ApplicationPage() {
             <h1 className="text-3xl font-bold">Applications</h1>
             <p className="text-muted-foreground">Manage student applications</p>
           </div>
-          <Button
-            className="rounded-xl bg-gradient-primary hover:opacity-90"
-            onClick={() => setShowCreate(true)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Application
-          </Button>
+          {!isEmployee && (
+            <Button
+              className="rounded-xl bg-gradient-primary hover:opacity-90"
+              onClick={() => setShowCreate(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Application
+            </Button>
+          )}
         </div>
 
         <div className="flex flex-col gap-4">
@@ -300,9 +333,7 @@ export default function ApplicationPage() {
                       <td className="py-4 px-6 text-muted-foreground">{app.desiredMajor}</td>
                       <td className="py-4 px-6 text-muted-foreground">{app.desiredCountry}</td>
                       <td className="py-4 px-6 text-muted-foreground">
-                        {typeof app.desiredUniversity === "object" && app.desiredUniversity !== null
-                          ? (app.desiredUniversity as any).name
-                          : app.desiredUniversity || "-"}
+                        {getUniversityName(app.desiredUniversity)}
                       </td>
                      
                      
@@ -329,27 +360,24 @@ export default function ApplicationPage() {
                           >
                             <Eye className="h-4 w-4 text-muted-foreground" />
                           </button>
-                          <button
-                            className="p-2 rounded-lg hover:bg-muted transition-colors"
-                            onClick={() => handleOpenUpdate(app)}
-                            title="Update Status"
-                          >
-                            <Edit className="h-4 w-4 text-muted-foreground" />
-                          </button>
-                          <button
-                            className="p-2 rounded-lg hover:bg-muted transition-colors"
-                            onClick={() => handleOpenAssign(app)}
-                            title="Assign to Employee"
-                          >
-                            <UserPlus className="h-4 w-4 text-muted-foreground" />
-                          </button>
-                          <button
-                            className="p-2 rounded-lg hover:bg-destructive/10 transition-colors"
-                            onClick={() => handleOpenDelete(app)}
-                            title="Delete"
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </button>
+                          {!isEmployee && (
+                            <>
+                              <button
+                                className="p-2 rounded-lg hover:bg-muted transition-colors"
+                                onClick={() => handleOpenAssign(app)}
+                                title="Assign to Employee"
+                              >
+                                <UserPlus className="h-5 w-5 text-muted-foreground" />
+                              </button>
+                              <button
+                                className="p-2 rounded-lg hover:bg-destructive/10 transition-colors"
+                                onClick={() => handleOpenDelete(app)}
+                                title="Delete"
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -398,11 +426,6 @@ export default function ApplicationPage() {
 
         {/* Modals */}
         <CreateApplicationModal open={showCreate} onClose={() => setShowCreate(false)} />
-        <UpdateApplicationStatusModal 
-          open={showUpdate} 
-          application={selectedApplication} 
-          onClose={() => setShowUpdate(false)} 
-        />
         <DeleteApplicationModal 
           open={showDelete} 
           application={selectedApplication} 
@@ -425,7 +448,10 @@ export default function ApplicationPage() {
                 itemId={selectedApplication?._id}
                 itemType="Application"
                 currentStatus={currentStatus}
-                onClose={() => setShowUpdateStatus(false)}
+                onClose={() => {
+                    setShowUpdateStatus(false);
+                    refetch();
+                }}
             />
         )}
       </div>

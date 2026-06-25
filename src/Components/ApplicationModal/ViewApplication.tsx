@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { X, User, Mail, Phone, Globe, FileText, GraduationCap, Calendar, Award, MapPin, Building2, ExternalLink, Files } from "lucide-react";
 import { type Application } from "../../app/services/crudApplication";
+import { useGetUniversitiesQuery } from "../../app/services/crudUniversity";
 
 interface ViewApplicationModalProps {
   open: boolean;
@@ -14,6 +15,21 @@ export function ViewApplicationModal({
   onClose,
 }: ViewApplicationModalProps) {
   if (!open || !application) return null;
+
+  const { data: universitiesData } = useGetUniversitiesQuery({ limit: 1000 });
+
+  const universityMap = new Map<string, string>();
+  universitiesData?.data?.universities?.forEach((uni) => {
+    universityMap.set(uni._id, uni.name);
+  });
+
+  const getUniversityName = (uni: any) => {
+    if (!uni) return "-";
+    if (typeof uni === "object" && uni !== null) {
+      return uni.name || "-";
+    }
+    return universityMap.get(uni) || uni || "-";
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -40,8 +56,12 @@ export function ViewApplicationModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      onClick={onClose}
+    >
       <motion.div
+        onClick={(e) => e.stopPropagation()}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-3xl rounded-2xl bg-background border border-border shadow-xl max-h-[90vh] overflow-y-auto"
@@ -150,14 +170,12 @@ export function ViewApplicationModal({
                 </div>
               </div>
 
-              <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg bg-muted/30">
+               <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg bg-muted/30">
                 <Building2 className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-xs text-muted-foreground">University ID</p>
+                  <p className="text-xs text-muted-foreground">University</p>
                   <p className="font-medium text-sm">
-                    {typeof application.desiredUniversity === "object" && application.desiredUniversity !== null
-                      ? (application.desiredUniversity as any).name
-                      : application.desiredUniversity}
+                    {getUniversityName(application.desiredUniversity)}
                   </p>
                 </div>
               </div>

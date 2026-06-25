@@ -53,7 +53,17 @@ export const assignmentsApi = createApi({
             providesTags: ["Assignment"],
         }),
 
-
+        getAllAssignments: builder.query<AssignmentsResponse, { page?: number; limit?: number } | void>({
+            query: (params) => {
+                const page = params?.page ?? 1;
+                const limit = params?.limit ?? 1000;
+                return {
+                    url: "api/v1/assigned/all",
+                    params: { page, limit },
+                };
+            },
+            providesTags: ["Assignment"],
+        }),
 
         updateAssignmentStatus: builder.mutation<AssignedItem, { id: string; status: string }>({
             query: ({ id, status }) => ({
@@ -66,4 +76,8 @@ export const assignmentsApi = createApi({
     }),
 });
 
-export const { useGetMyAssignmentsQuery, useUpdateAssignmentStatusMutation } = assignmentsApi;
+export const { 
+    useGetMyAssignmentsQuery, 
+    useGetAllAssignmentsQuery, 
+    useUpdateAssignmentStatusMutation 
+} = assignmentsApi;
