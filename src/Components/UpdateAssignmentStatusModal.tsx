@@ -52,28 +52,17 @@ export function UpdateAssignmentStatusModal({
     e.preventDefault();
     if (!status) return;
 
-    // Check if user is Admin
-    const role = localStorage.getItem("role");
-    
-    // Case 1: Admin Update (Updates via Assignment if assigned, otherwise updates Item Status directly)
-    if (role === "Admin" && itemId && itemType) {
+    // If there is an assignment ID, always update via the assigned endpoint (for both Admin and Employee)
+    if (assignmentId) {
         try {
-            if (assignmentId) {
-                await updateStatus({ id: assignmentId, status }).unwrap();
-            } else {
-                if (itemType === "Travel") {
-                    await updateTravelStatus({ id: itemId, status }).unwrap();
-                } else {
-                    await updateApplicationStatus({ id: itemId, status }).unwrap();
-                }
-            }
+            await updateStatus({ id: assignmentId, status }).unwrap();
             toast({
                 title: "Status Updated",
-                description: `${itemType} status updated to ${status}.`,
+                description: `Status updated to ${status}.`,
             });
             onClose();
         } catch (error: any) {
-            console.error("Admin Update failed", error);
+            console.error("Status update failed", error);
             toast({
                 variant: "destructive",
                 title: "Update failed",
@@ -83,29 +72,32 @@ export function UpdateAssignmentStatusModal({
         return;
     }
 
-    // Case 2: Employee Update (Updates Assignment Status)
-    if (assignmentId) {
+    // Fallback: No assignment ID — update item status directly (unassigned items only)
+    const role = localStorage.getItem("role");
+    if (role === "Admin" && itemId && itemType) {
         try {
-          await updateStatus({ id: assignmentId, status }).unwrap();
-          
-          toast({
-            title: "Status Updated",
-            description: `Assignment status updated to ${status}.`,
-          });
-          onClose();
+            if (itemType === "Travel") {
+                await updateTravelStatus({ id: itemId, status }).unwrap();
+            } else {
+                await updateApplicationStatus({ id: itemId, status }).unwrap();
+            }
+            toast({
+                title: "Status Updated",
+                description: `${itemType} status updated to ${status}.`,
+            });
+            onClose();
         } catch (error: any) {
-          console.error("Update failed", error);
-          toast({
-            variant: "destructive",
-            title: "Update failed",
-            description:
-              error?.data?.message || "Could not update the status. Please try again.",
-          });
+            console.error("Admin direct update failed", error);
+            toast({
+                variant: "destructive",
+                title: "Update failed",
+                description: error?.data?.message || "Could not update status.",
+            });
         }
         return;
     }
 
-    // Case 2: No Assignment (Admin needs to assign to self first)
+    // Employee with no assignment — needs assignment first
     if (!itemId || !itemType) {
         console.error("Missing item details for assignment");
         return;
@@ -128,10 +120,9 @@ export function UpdateAssignmentStatusModal({
         } else {
             await assignApplication({ id: itemId, assignedTo: userId }).unwrap();
         }
-        // now we wait for the useEffect to pick up the new assignment from the refetched query
     } catch (error: any) {
         setIsProcessingAssignment(false);
-         toast({
+        toast({
             variant: "destructive",
             title: "Assignment Failed",
             description: error?.data?.message || "Could not assign the item.",

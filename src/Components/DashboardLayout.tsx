@@ -15,23 +15,25 @@ import {
   Newspaper,
   PenTool,
   Book,
+  UserCircle,
 } from "lucide-react";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-  { icon: Users, label: "Employees", href: "/dashboard/employees" },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", adminOnly: false },
+  { icon: Users, label: "Employees", href: "/dashboard/employees", adminOnly: true },
   {
     icon: GraduationCap,
     label: "Universities",
     href: "/dashboard/universities",
+    adminOnly: true,
   },
-  { icon: Book, label: "Courses", href: "/dashboard/courses" },
-  { icon: BookOpen, label: "Partner", href: "/dashboard/partner" },
-
-  { icon: FileText, label: "Applications", href: "/dashboard/applications" },
-  { icon: Newspaper, label: "News", href: "/dashboard/news" },
-  { icon: PenTool, label: "Blog", href: "/dashboard/blog" },
-  { icon: UserCheck, label: "Leads", href: "/dashboard/leads" },
+  { icon: Book, label: "Courses", href: "/dashboard/courses", adminOnly: true },
+  { icon: BookOpen, label: "Partner", href: "/dashboard/partner", adminOnly: true },
+  { icon: FileText, label: "Applications", href: "/dashboard/applications", adminOnly: false },
+  { icon: Newspaper, label: "News", href: "/dashboard/news", adminOnly: true },
+  { icon: PenTool, label: "Blog", href: "/dashboard/blog", adminOnly: true },
+  { icon: UserCheck, label: "Leads", href: "/dashboard/leads", adminOnly: true },
+  { icon: UserCircle, label: "My Profile", href: "/dashboard/admin-profile", adminOnly: true },
 ];
 
 interface DashboardLayoutProps {
@@ -46,7 +48,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const filteredMenuItems = menuItems.filter((item) => {
     if (role === "Employee") {
-      return item.label === "Applications";
+      return !item.adminOnly;
     }
     return true;
   });
@@ -135,9 +137,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <p className="text-sm font-medium">{localStorage.getItem("name") || "Admin User"}</p>
                 <p className="text-xs text-muted-foreground">{localStorage.getItem("email") || "admin@safari.edu"}</p>
               </div>
-              <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center text-primary-foreground font-medium">
+              <Link
+                to="/dashboard/admin-profile"
+                className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center text-primary-foreground font-medium hover:opacity-80 transition-opacity"
+                title="My Profile"
+              >
                 {localStorage.getItem("name")?.charAt(0).toUpperCase() || "A"}
-              </div>
+              </Link>
             </div>
           </div>
         </header>

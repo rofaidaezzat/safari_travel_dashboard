@@ -1,13 +1,31 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+export interface SocialMediaLink {
+  _id?: string; // returned by server, must be stripped before PATCH
+  title: string;
+  link: string;
+}
+
 export interface Employee {
   _id: string;
   name: string;
   email: string;
   role: string;
   is_active: boolean;
+  // Admin-only fields
+  social_media_links?: SocialMediaLink[];
+  phone_num?: string;
+  whats_num?: string;
+  address?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AdminProfileBody {
+  social_media_links?: SocialMediaLink[];
+  phone_num?: string;
+  whats_num?: string;
+  address?: string;
 }
 
 interface EmployeesResponse {
@@ -117,6 +135,20 @@ export const employeesApi = createApi({
         response.data.employee,
     }),
 
+    updateAdminProfile: builder.mutation<Employee, { id: string; body: AdminProfileBody }>({
+      query: ({ id, body }) => ({
+        url: `api/v1/employees/${id}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Employee", id },
+        { type: "Employee", id: "LIST" },
+      ],
+      transformResponse: (response: { data: { employee: Employee } }) =>
+        response.data.employee,
+    }),
+
     deleteEmployee: builder.mutation<void, string>({
       query: (id) => ({
         url: `api/v1/employees/${id}`,
@@ -134,6 +166,7 @@ export const {
   useGetEmployeesQuery,
   useGetEmployeeByIdQuery,
   useUpdateEmployeeMutation,
+  useUpdateAdminProfileMutation,
   useDeleteEmployeeMutation,
   useCreateEmployeeMutation,
 } = employeesApi;

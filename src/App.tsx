@@ -12,6 +12,7 @@ import ApplicationPage from "./Pages/ApplicationPage";
 import Travel from "./Pages/Travel";
 import NewsPage from "./Pages/News";
 import BlogPage from "./Pages/Blog";
+import AdminProfilePage from "./Pages/AdminProfilePage";
 function App() {
   const queryClient = new QueryClient();
   return (
@@ -30,6 +31,7 @@ function App() {
             <Route path="/dashboard/travel" element={<Travel />} />
             <Route path="/dashboard/news" element={<NewsPage />} />
             <Route path="/dashboard/blog" element={<BlogPage />} />
+            <Route path="/dashboard/admin-profile" element={<AdminProfilePage />} />
             <Route path="/" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>
