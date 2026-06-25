@@ -11,6 +11,7 @@ import { UpdateUniversityModal } from "../Components/UniversityModal/UpdateUnive
 import { DeleteUniversityModal } from "../Components/UniversityModal/DeleteUniversity";
 import { ViewUniversityModal } from "../Components/UniversityModal/ViewUniversity";
 import { TableSkeleton } from "../Components/UI/TableSkeleton";
+import { useGetCoursesQuery } from "../app/services/crudCourse";
 
 export default function UniversityPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,8 +24,19 @@ export default function UniversityPage() {
   const [selectedUniversity, setSelectedUniversity] = useState<University | null>(null);
 
   const { data, isLoading, isError, error, refetch } = useGetUniversitiesQuery({ page, limit: 10, sort });
-
+  const { data: coursesData } = useGetCoursesQuery({ limit: 100 });
+  
   const universities = data?.data.universities || [];
+  const coursesList = coursesData?.data?.courses || [];
+
+  const getCoursesForUniversity = (uniId: string, uniCourses?: string[]) => {
+    if (uniCourses && uniCourses.length > 0) {
+      return coursesList.filter(c => uniCourses.includes(c._id));
+    }
+    return coursesList.filter(c => 
+      c.universities && c.universities.some(u => typeof u === "string" ? u === uniId : u._id === uniId)
+    );
+  };
 
   const filteredUniversities = universities.filter((uni) =>
     uni.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -99,13 +111,14 @@ export default function UniversityPage() {
                   <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Name</th>
                   <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Country</th>
                    <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Fees</th>
-                  <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Programs</th>
-                  <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Actions</th>
+                   <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Programs</th>
+                   <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Courses</th>
+                   <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
-                  <TableSkeleton columns={6} />
+                 {isLoading ? (
+                   <TableSkeleton columns={7} />
                 ) : filteredUniversities.length > 0 ? (
                   filteredUniversities.map((uni) => (
                     <tr key={uni._id} className="border-t border-border hover:bg-muted/30 transition-colors">
@@ -127,9 +140,22 @@ export default function UniversityPage() {
                       </td>
                       <td className="py-4 px-6 text-muted-foreground">{uni.country}</td>
                        <td className="py-4 px-6 text-muted-foreground">{uni.fees}</td>
-                      <td className="py-4 px-6 text-muted-foreground">
-                          {uni.programs?.length ?? 0} Programs
-                      </td>
+                       <td className="py-4 px-6 text-muted-foreground">
+                           {uni.programs?.length ?? 0} Programs
+                       </td>
+                       <td className="py-4 px-6 text-muted-foreground">
+                          <div className="flex flex-wrap gap-1 max-w-[220px]">
+                            {getCoursesForUniversity(uni._id, uni.courses).length > 0 ? (
+                              getCoursesForUniversity(uni._id, uni.courses).map((course, idx) => (
+                                <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                                  {course.title}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-xs text-muted-foreground">-</span>
+                            )}
+                          </div>
+                       </td>
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-2">
                           <button
@@ -155,8 +181,8 @@ export default function UniversityPage() {
                     </tr>
                   ))
                 ) : (
-                  <tr>
-                    <td colSpan={6} className="py-8 text-center text-muted-foreground">
+                   <tr>
+                     <td colSpan={7} className="py-8 text-center text-muted-foreground">
                        {isError ? (
                           <div className="flex flex-col items-center gap-2">
                             <span>
