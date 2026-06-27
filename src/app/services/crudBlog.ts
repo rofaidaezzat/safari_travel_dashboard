@@ -30,7 +30,7 @@ interface BlogsResponse {
 export const blogApi = createApi({
     reducerPath: "blogApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "https://safary-kappa.vercel.app/",
+        baseUrl: "/",
         prepareHeaders: (headers) => {
             const token = localStorage.getItem("accessToken");
 

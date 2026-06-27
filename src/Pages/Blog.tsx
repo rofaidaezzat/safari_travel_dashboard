@@ -26,10 +26,19 @@ const BlogPage = () => {
   const { data, isLoading, isError, refetch } = useGetBlogsQuery({
     page,
     limit: 10,
-    search: searchTerm,
-  });
+  }, { refetchOnMountOrArgChange: true });
 
   const blogs = data?.data.blogs ?? [];
+
+  const q = searchTerm.toLowerCase();
+  const filteredBlogs = searchTerm
+    ? blogs.filter((item) =>
+        item.title?.toLowerCase().includes(q) ||
+        item.author?.toLowerCase().includes(q) ||
+        item.content?.toLowerCase().includes(q) ||
+        item.tags?.some((tag) => tag.toLowerCase().includes(q))
+      )
+    : blogs;
 
   const handleOpenUpdate = (blog: BlogType) => {
     setSelectedBlog(blog);
@@ -70,7 +79,7 @@ const BlogPage = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search blogs..."
+              placeholder="Search by title, author, tags, or content..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 rounded-xl"
@@ -98,8 +107,8 @@ const BlogPage = () => {
               <tbody>
                 {isLoading ? (
                   <TableSkeleton columns={5} />
-                ) : blogs.length > 0 ? (
-                    blogs.map((item) => (
+                ) : filteredBlogs.length > 0 ? (
+                    filteredBlogs.map((item) => (
                     <tr
                       key={item._id}
                       className="border-t border-border hover:bg-muted/30 transition-colors"

@@ -50,12 +50,12 @@ const Travel = () => {
     search: searchTerm,
     type: filterType,
     sort: sortOrder
-  }, { skip: isEmployee });
+  }, { skip: isEmployee, refetchOnMountOrArgChange: true });
 
   // Fetch assigned travels (for Employee)
   const { data: assignmentsData, isLoading: isLoadingAssign, isError: isAssignError, refetch: refetchAssign } = useGetMyAssignmentsQuery(
     { page, limit: 10 },
-    { skip: !isEmployee }
+    { skip: !isEmployee, refetchOnMountOrArgChange: true }
   );
 
   let travels: TravelWithAssignment[] = [];

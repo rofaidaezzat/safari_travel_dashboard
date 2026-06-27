@@ -38,7 +38,7 @@ interface ApplicationsResponse {
 export const applicationsApi = createApi({
     reducerPath: "applicationsApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "https://safary-kappa.vercel.app/",
+        baseUrl: "/",
         prepareHeaders: (headers) => {
             const token = localStorage.getItem("accessToken");
             if (token && token !== "undefined") {
@@ -91,7 +91,7 @@ export const applicationsApi = createApi({
 
         updateApplicationStatus: builder.mutation<Application, { id: string; status: Application["status"] }>({
             query: ({ id, status }) => ({
-                url: `api/v1/applications/${id}/status`,
+                url: `api/v1/assigned/${id}/status`,
                 method: "PATCH",
                 body: { status },
             }),

@@ -245,11 +245,14 @@ export function CreateUniversityModal({
                 </Select>
                 {errors.country && <p className="text-red-500 text-xs">{errors.country}</p>}
             </div>
-             <div className="space-y-1">
+                 <div className="space-y-1">
                 <label className="text-sm font-medium">Fees</label>
                 <Input
                 value={fees}
                 onChange={(e) => setFees(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "-") e.preventDefault();
+                }}
                 placeholder="e.g. 5000$"
                 />
                 {errors.fees && <p className="text-red-500 text-xs">{errors.fees}</p>}

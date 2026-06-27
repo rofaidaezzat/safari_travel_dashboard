@@ -22,15 +22,20 @@ export default function LeadPage() {
   const [showView, setShowView] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
-  const { data, isLoading, isError, error, refetch } = useGetLeadsQuery({ page, limit: 10, sort });
+  const { data, isLoading, isError, error, refetch } = useGetLeadsQuery({ page, limit: 10, sort }, { refetchOnMountOrArgChange: true });
 
   const leads = data?.data.leads || [];
 
-  const filteredLeads = leads.filter((lead) =>
-    lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    lead.phone.includes(searchTerm)
-  );
+  const q = searchTerm.toLowerCase();
+  const filteredLeads = searchTerm
+    ? leads.filter((lead) =>
+        lead.name?.toLowerCase().includes(q) ||
+        lead.email?.toLowerCase().includes(q) ||
+        lead.phone?.includes(searchTerm) ||
+        lead.message?.toLowerCase().includes(q) ||
+        lead.status?.toLowerCase().includes(q)
+      )
+    : leads;
 
   const handleOpenUpdate = (lead: Lead) => {
     setSelectedLead(lead);

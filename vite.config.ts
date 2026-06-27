@@ -9,4 +9,13 @@ export default defineConfig({
       '@': "/src",
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://safary-kappa.vercel.app',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
 })

@@ -32,17 +32,19 @@ import {
   useGetDashboardTrendsQuery,
   useGetApplicationStatusQuery,
   useGetRecentActivitiesQuery,
+  useGetDashboardCoursesCountQuery,
 } from "../app/services/crudDashboard";
 
 // TODO: Replace with actual API data
 export default function DashboardHome() {
-  const { data: counts, isLoading: countsLoading } = useGetDashboardCountsQuery();
-  const { data: trends, isLoading: trendsLoading } = useGetDashboardTrendsQuery();
-  const { data: appStatus, isLoading: appStatusLoading } = useGetApplicationStatusQuery();
+  const { data: counts, isLoading: countsLoading } = useGetDashboardCountsQuery(undefined, { refetchOnMountOrArgChange: true });
+  const { data: trends, isLoading: trendsLoading } = useGetDashboardTrendsQuery(undefined, { refetchOnMountOrArgChange: true });
+  const { data: appStatus, isLoading: appStatusLoading } = useGetApplicationStatusQuery(undefined, { refetchOnMountOrArgChange: true });
+  const { data: coursesCount, isLoading: coursesCountLoading } = useGetDashboardCoursesCountQuery(undefined, { refetchOnMountOrArgChange: true });
   const [page, setPage] = useState(1);
-  const { data: activities, isLoading: activitiesLoading, isFetching } = useGetRecentActivitiesQuery({ page, limit: 10 });
+  const { data: activities, isLoading: activitiesLoading, isFetching } = useGetRecentActivitiesQuery({ page, limit: 10 }, { refetchOnMountOrArgChange: true });
 
-  const isLoading = countsLoading || trendsLoading || appStatusLoading || activitiesLoading;
+  const isLoading = countsLoading || trendsLoading || appStatusLoading || activitiesLoading || coursesCountLoading;
 
   const getRecentActivityIcon = (type: string) => {
     switch (type) {
@@ -74,10 +76,6 @@ export default function DashboardHome() {
     {
       title: "Total Employees",
       value: counts?.totalEmployees || 0,
-      change: "+0 (Mock)", 
-      // API doesn't provide change/trend info yet, using placeholder or calculated if previous data exists.
-      // For now I will hide change or keep it static/mock as API response didn't include it. 
-      // User request only showed totals.
       isPositive: true,
       icon: Users,
       href: "/dashboard/employees",
@@ -86,16 +84,22 @@ export default function DashboardHome() {
     {
       title: "Universities",
       value: counts?.totalUniversities || 0,
-      change: "+0",
       isPositive: true,
       icon: GraduationCap,
       href: "/dashboard/universities",
       color: "bg-purple-500/10 text-purple-500",
     },
     {
+      title: "Courses",
+      value: coursesCount || 0,
+      isPositive: true,
+      icon: BookOpen,
+      href: "/dashboard/courses",
+      color: "bg-emerald-500/10 text-emerald-500",
+    },
+    {
       title: "Partners",
       value: counts?.totalPartners || 0,
-      change: "+0",
       isPositive: true,
       icon: BookOpen,
       href: "/dashboard/partner",
@@ -104,7 +108,6 @@ export default function DashboardHome() {
     {
       title: "Leads",
       value: counts?.totalLeads || 0,
-      change: "+0",
       isPositive: true,
       icon: UserCheck,
       href: "/dashboard/leads",
@@ -113,7 +116,6 @@ export default function DashboardHome() {
     {
       title: "Applications",
       value: counts?.totalApplications || 0,
-      change: "+0",
       isPositive: true,
       icon: FileText,
       href: "/dashboard/applications",

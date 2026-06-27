@@ -41,7 +41,7 @@ export default function EmployeesPage() {
     sort,
     status: statusFilter,
     role: roleFilter,
-  });
+  }, { refetchOnMountOrArgChange: true });
 
   const [updateEmployee, { isLoading: isUpdating }] =
     useUpdateEmployeeMutation();

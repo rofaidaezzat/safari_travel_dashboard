@@ -21,6 +21,7 @@ export function CreateEmployeeModal({ open, onClose }: CreateEmployeeModalProps)
   const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState("Employee");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState<string | null>(null);
 
   if (!open) return null;
 
@@ -29,6 +30,7 @@ export function CreateEmployeeModal({ open, onClose }: CreateEmployeeModalProps)
     try {
       await registerEmployeeSchema.validate({ name, email, password, role }, { abortEarly: false });
       setErrors({});
+      setApiError(null);
 
       await createEmployee({ name, email, password, role }).unwrap();
       toast({
@@ -48,11 +50,12 @@ export function CreateEmployeeModal({ open, onClose }: CreateEmployeeModalProps)
         });
         setErrors(newErrors);
       } else {
+        const msg = error?.data?.message || "Could not create the employee. Please try again.";
+        setApiError(msg);
         toast({
             variant: "destructive",
             title: "Creation failed",
-            description:
-            error?.data?.message || "Could not create the employee. Please try again.",
+            description: msg,
         });
       }
     }
@@ -76,11 +79,17 @@ export function CreateEmployeeModal({ open, onClose }: CreateEmployeeModalProps)
         </div>
 
         <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
+          {apiError && (
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
+              <span className="mt-0.5">⚠</span>
+              <span>{apiError}</span>
+            </div>
+          )}
           <div className="space-y-1">
             <label className="text-sm font-medium">Name</label>
             <Input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => { setName(e.target.value); setApiError(null); }}
               placeholder="Employee name"
             />
             {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
@@ -91,7 +100,7 @@ export function CreateEmployeeModal({ open, onClose }: CreateEmployeeModalProps)
             <Input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); setApiError(null); }}
               placeholder="employee@wasel.com"
             />
              {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
@@ -103,7 +112,7 @@ export function CreateEmployeeModal({ open, onClose }: CreateEmployeeModalProps)
               <Input
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => { setPassword(e.target.value); setApiError(null); }}
                 placeholder="Password"
                 className="pr-10"
               />

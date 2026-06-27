@@ -28,9 +28,9 @@ interface ViewNewsModalProps {
             <>
               {/* Header Image */}
               <div className="relative h-64 w-full bg-muted flex-shrink-0">
-                {news.image ? (
+              {(news.coverImage || news.image) ? (
                   <img 
-                    src={news.image} 
+                    src={news.coverImage || news.image} 
                     alt={news.title} 
                     className="w-full h-full object-cover"
                   />
@@ -51,10 +51,12 @@ interface ViewNewsModalProps {
               <div className="p-8 overflow-y-auto">
                 <div className="mb-6">
                     <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground mb-3">
-                        <span className="flex items-center gap-1 bg-muted px-2 py-1 rounded-full">
-                            <Tag className="h-3 w-3" />
-                            {news.category}
-                        </span>
+                        {news.category && (
+                          <span className="flex items-center gap-1 bg-muted px-2 py-1 rounded-full">
+                              <Tag className="h-3 w-3" />
+                              {news.category}
+                          </span>
+                        )}
                         <span className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
                             {new Date(news.createdAt).toLocaleDateString()}
@@ -65,9 +67,11 @@ interface ViewNewsModalProps {
                         </span>
                     </div>
                     <h2 className="text-3xl font-bold mb-4">{news.title}</h2>
-                    <p className="text-lg text-muted-foreground italic mb-6 border-l-4 border-primary pl-4">
-                        {news.summary}
-                    </p>
+                    {news.summary && (
+                      <p className="text-lg text-muted-foreground italic mb-6 border-l-4 border-primary pl-4">
+                          {news.summary}
+                      </p>
+                    )}
                 </div>
   
                 <div className="prose prose-sm dark:prose-invert max-w-none">

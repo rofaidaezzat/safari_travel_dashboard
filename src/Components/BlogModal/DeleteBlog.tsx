@@ -8,9 +8,10 @@ interface DeleteBlogModalProps {
   open: boolean;
   blog: Blog | null;
   onClose: () => void;
+  onDeleted?: () => void;
 }
 
-export function DeleteBlogModal({ open, blog, onClose }: DeleteBlogModalProps) {
+export function DeleteBlogModal({ open, blog, onClose, onDeleted }: DeleteBlogModalProps) {
   const { toast } = useToast();
   const [deleteBlog, { isLoading }] = useDeleteBlogMutation();
 
@@ -24,6 +25,7 @@ export function DeleteBlogModal({ open, blog, onClose }: DeleteBlogModalProps) {
         description: `Blog post deleted successfully.`,
       });
       onClose();
+      onDeleted?.();
     } catch (error: any) {
       toast({
         variant: "destructive",

@@ -27,10 +27,21 @@ const NewsPage = () => {
   const { data, isLoading, isError, refetch } = useGetNewsQuery({
     page,
     limit: 10,
-    search: searchTerm,
-  });
+  }, { refetchOnMountOrArgChange: true });
 
   const newsList = data?.data.news ?? [];
+
+  const q = searchTerm.toLowerCase();
+  const filteredNews = searchTerm
+    ? newsList.filter((item) =>
+        item.title?.toLowerCase().includes(q) ||
+        item.author?.toLowerCase().includes(q) ||
+        item.content?.toLowerCase().includes(q) ||
+        item.summary?.toLowerCase().includes(q) ||
+        item.category?.toLowerCase().includes(q) ||
+        item.tags?.some((tag) => tag.toLowerCase().includes(q))
+      )
+    : newsList;
 
   const handleOpenUpdate = (news: NewsType) => {
     setSelectedNews(news);
@@ -71,7 +82,7 @@ const NewsPage = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search news..."
+              placeholder="Search by title, author, tags, category..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 rounded-xl"
@@ -99,8 +110,8 @@ const NewsPage = () => {
               <tbody>
                 {isLoading ? (
                   <TableSkeleton columns={5} />
-                ) : newsList.length > 0 ? (
-                    newsList.map((item) => (
+                ) : filteredNews.length > 0 ? (
+                    filteredNews.map((item) => (
                     <tr
                       key={item._id}
                       className="border-t border-border hover:bg-muted/30 transition-colors"

@@ -46,23 +46,23 @@ export default function ApplicationPage() {
   // Fetch all applications (for Admin)
   const { data: allAppsData, isLoading: isAppsLoading, isError: isAppsError, error: appsError, refetch: refetchApps } = useGetApplicationsQuery(
     { page, limit: 10, sort },
-    { skip: isEmployee }
+    { skip: isEmployee, refetchOnMountOrArgChange: true }
   );
 
   // Fetch assigned applications (for Employee)
   const { data: assignmentsData, isLoading: isAssignLoading, isError: isAssignError, error: assignError, refetch: refetchAssign } = useGetMyAssignmentsQuery(
     { page, limit: 10 },
-    { skip: !isEmployee }
+    { skip: !isEmployee, refetchOnMountOrArgChange: true }
   );
 
   // Fetch all assignments (for Admin) to map assignment IDs
   const { data: allAssignmentsData } = useGetAllAssignmentsQuery(
     undefined,
-    { skip: isEmployee }
+    { skip: isEmployee, refetchOnMountOrArgChange: true }
   );
 
   // Fetch universities to display names instead of IDs
-  const { data: universitiesData } = useGetUniversitiesQuery({ limit: 1000 });
+  const { data: universitiesData } = useGetUniversitiesQuery({ limit: 1000 }, { refetchOnMountOrArgChange: true });
 
   const universityMap = new Map<string, string>();
   universitiesData?.data?.universities?.forEach((uni) => {

@@ -3,14 +3,14 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export interface News {
     _id: string;
     title: string;
-    category: string;
-    image: string;
+    category?: string;
+    image?: string;
     coverImage?: string;
     tags?: string[];
-    summary: string;
+    summary?: string;
     content: string;
     author: string;
-    is_active: boolean;
+    is_active?: boolean;
     createdAt: string;
     updatedAt: string;
 }
@@ -32,7 +32,7 @@ interface NewsResponse {
 export const newsApi = createApi({
     reducerPath: "newsApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "https://safary-kappa.vercel.app/",
+        baseUrl: "/",
         prepareHeaders: (headers) => {
             const token = localStorage.getItem("accessToken");
 
@@ -96,8 +96,8 @@ export const newsApi = createApi({
                 url: `api/v1/news/${id}`,
             }),
             providesTags: (_result, _error, id) => [{ type: "News", id }],
-            transformResponse: (response: { data: { news: News } }) =>
-                response.data.news,
+            transformResponse: (response: { data: News }) =>
+                response.data,
         }),
 
         updateNews: builder.mutation<

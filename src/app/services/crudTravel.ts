@@ -38,7 +38,7 @@ interface TravelsResponse {
 export const travelApi = createApi({
     reducerPath: "travelApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "https://safary-kappa.vercel.app/",
+        baseUrl: "/",
         prepareHeaders: (headers) => {
             const token = localStorage.getItem("accessToken");
 

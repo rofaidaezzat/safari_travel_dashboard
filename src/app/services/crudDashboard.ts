@@ -1,7 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const baseUrl = "https://safary-kappa.vercel.app/api/v1/admin/dashboard";
-
 export interface DashboardCounts {
     totalEmployees: number;
     totalUniversities: number;
@@ -38,11 +36,11 @@ interface ApiResponse<T> {
 export const dashboardApi = createApi({
     reducerPath: "dashboardApi",
     baseQuery: fetchBaseQuery({
-        baseUrl,
+        baseUrl: "/",
         prepareHeaders: (headers) => {
             const token = localStorage.getItem("accessToken");
-            if (token) {
-                headers.set("Authorization", `Bearer ${token}`);
+            if (token && token !== "undefined") {
+                headers.set("authorization", `Bearer ${token}`);
             }
             headers.set("ngrok-skip-browser-warning", "true");
             return headers;
@@ -51,17 +49,17 @@ export const dashboardApi = createApi({
     tagTypes: ["Dashboard"],
     endpoints: (builder) => ({
         getDashboardCounts: builder.query<DashboardCounts, void>({
-            query: () => "/counts",
+            query: () => "api/v1/admin/dashboard/counts",
             transformResponse: (response: ApiResponse<DashboardCounts>) => response.data,
             providesTags: ["Dashboard"],
         }),
         getDashboardTrends: builder.query<DashboardTrend[], void>({
-            query: () => "/trends",
+            query: () => "api/v1/admin/dashboard/trends",
             transformResponse: (response: ApiResponse<DashboardTrend[]>) => response.data,
             providesTags: ["Dashboard"],
         }),
         getApplicationStatus: builder.query<ApplicationStatus[], void>({
-            query: () => "/application-status",
+            query: () => "api/v1/admin/dashboard/application-status",
             transformResponse: (response: ApiResponse<ApplicationStatus[]>) => response.data,
             providesTags: ["Dashboard"],
         }),
@@ -70,11 +68,16 @@ export const dashboardApi = createApi({
                 const page = params?.page ?? 1;
                 const limit = params?.limit ?? 10;
                 return {
-                    url: "/recent-activities",
+                    url: "api/v1/admin/dashboard/recent-activities",
                     params: { page, limit },
                 };
             },
             transformResponse: (response: ApiResponse<RecentActivity[]>) => response.data,
+            providesTags: ["Dashboard"],
+        }),
+        getDashboardCoursesCount: builder.query<number, void>({
+            query: () => ({ url: "api/v1/courses", params: { page: 1, limit: 1 } }),
+            transformResponse: (response: { results: number }) => response.results,
             providesTags: ["Dashboard"],
         }),
     }),
@@ -85,4 +88,5 @@ export const {
     useGetDashboardTrendsQuery,
     useGetApplicationStatusQuery,
     useGetRecentActivitiesQuery,
+    useGetDashboardCoursesCountQuery,
 } = dashboardApi;

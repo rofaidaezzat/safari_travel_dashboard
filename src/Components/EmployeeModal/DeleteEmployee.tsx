@@ -8,12 +8,14 @@ interface DeleteEmployeeModalProps {
   open: boolean;
   employee: Employee | null;
   onClose: () => void;
+  onDeleted?: () => void;
 }
 
 export function DeleteEmployeeModal({
   open,
   employee,
   onClose,
+  onDeleted,
 }: DeleteEmployeeModalProps) {
   const { toast } = useToast();
   const [deleteEmployee, { isLoading }] = useDeleteEmployeeMutation();
@@ -28,8 +30,19 @@ export function DeleteEmployeeModal({
         description: `${employee.name} has been removed.`,
       });
       onClose();
+      onDeleted?.();
     } catch (error: any) {
       // eslint-disable-line @typescript-eslint/no-explicit-any
+      // 404 = item deleted, server returned 404 for gone resource
+      if (error?.status === 404) {
+        toast({
+          title: "Employee deleted",
+          description: `${employee.name} has been removed.`,
+        });
+        onClose();
+        onDeleted?.();
+        return;
+      }
       toast({
         variant: "destructive",
         title: "Delete failed",

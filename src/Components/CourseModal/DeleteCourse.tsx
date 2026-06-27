@@ -8,12 +8,14 @@ interface DeleteCourseModalProps {
   open: boolean;
   course: Course | null;
   onClose: () => void;
+  onDeleted?: () => void;
 }
 
 export function DeleteCourseModal({
   open,
   course,
   onClose,
+  onDeleted,
 }: DeleteCourseModalProps) {
   const { toast } = useToast();
   const [deleteCourse, { isLoading }] = useDeleteCourseMutation();
@@ -28,7 +30,18 @@ export function DeleteCourseModal({
         description: `Course ${course.title} has been deleted.`,
       });
       onClose();
+      onDeleted?.();
     } catch (error: any) {
+      // 404 = item was deleted, server returned 404 for gone resource
+      if (error?.status === 404) {
+        toast({
+          title: "Course deleted",
+          description: `Course ${course.title} has been deleted.`,
+        });
+        onClose();
+        onDeleted?.();
+        return;
+      }
       toast({
         variant: "destructive",
         title: "Deletion failed",

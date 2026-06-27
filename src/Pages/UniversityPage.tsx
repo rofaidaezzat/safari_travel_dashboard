@@ -22,9 +22,10 @@ export default function UniversityPage() {
   const [showDelete, setShowDelete] = useState(false);
   const [showView, setShowView] = useState(false);
   const [selectedUniversity, setSelectedUniversity] = useState<University | null>(null);
+  const [courseFilter, setCourseFilter] = useState("");
 
-  const { data, isLoading, isError, error, refetch } = useGetUniversitiesQuery({ page, limit: 10, sort });
-  const { data: coursesData } = useGetCoursesQuery({ limit: 100 });
+  const { data, isLoading, isError, error, refetch } = useGetUniversitiesQuery({ page, limit: 10, sort }, { refetchOnMountOrArgChange: true });
+  const { data: coursesData } = useGetCoursesQuery({ limit: 100 }, { refetchOnMountOrArgChange: true });
   
   const universities = data?.data.universities || [];
   const coursesList = coursesData?.data?.courses || [];
@@ -38,9 +39,14 @@ export default function UniversityPage() {
     );
   };
 
-  const filteredUniversities = universities.filter((uni) =>
-    uni.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUniversities = universities.filter((uni) => {
+    const matchesSearch = uni.name.toLowerCase().includes(searchTerm.toLowerCase());
+    if (!matchesSearch) return false;
+    if (!courseFilter) return true;
+    // Check if this university has the selected course
+    const uniCourses = getCoursesForUniversity(uni._id, uni.courses);
+    return uniCourses.some((c) => c._id === courseFilter);
+  });
 
   const handleOpenUpdate = (uni: University) => {
     setSelectedUniversity(uni);
@@ -92,6 +98,24 @@ export default function UniversityPage() {
             <option value="-createdAt">Newest</option>
             <option value="createdAt">Oldest</option>
           </select>
+          <select
+            value={courseFilter}
+            onChange={(e) => { setCourseFilter(e.target.value); setPage(1); }}
+            className="h-10 px-3 rounded-xl border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <option value="">All Courses</option>
+            {coursesList.map((course) => (
+              <option key={course._id} value={course._id}>{course.title}</option>
+            ))}
+          </select>
+          {courseFilter && (
+            <button
+              onClick={() => setCourseFilter("")}
+              className="h-10 px-3 rounded-xl border border-destructive/50 bg-destructive/10 text-destructive text-sm hover:bg-destructive/20 transition-colors"
+            >
+              Clear
+            </button>
+          )}
         </div>
 
 

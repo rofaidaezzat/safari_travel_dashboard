@@ -99,7 +99,15 @@ export const createUniversitySchema = yup.object().shape({
     country: yup.string().required("Country is required"),
     description: yup.string().required("Description is required"),
     programs: yup.array().of(yup.string()).optional(),
-    fees: yup.string().required("Fees are required"),
+    fees: yup.string().required("Fees are required").test(
+        "non-negative-fees",
+        "Fees cannot be negative",
+        (value) => {
+            if (!value) return true;
+            const num = parseFloat(value.replace(/[^0-9.-]/g, ""));
+            return isNaN(num) || num >= 0;
+        }
+    ),
     admissionRequirements: yup.string().required("Requirements are required"),
     images: yup.array().of(yup.string()).optional(),
     videoUrl: yup.string().url("Invalid URL").optional(),
@@ -110,7 +118,15 @@ export const updateUniversitySchema = yup.object().shape({
     country: yup.string().optional(),
     description: yup.string().optional(),
     programs: yup.array().of(yup.string()).optional(),
-    fees: yup.string().optional(),
+    fees: yup.string().optional().test(
+        "non-negative-fees",
+        "Fees cannot be negative",
+        (value) => {
+            if (!value) return true;
+            const num = parseFloat(value.replace(/[^0-9.-]/g, ""));
+            return isNaN(num) || num >= 0;
+        }
+    ),
     admissionRequirements: yup.string().optional(),
     images: yup.array().of(yup.string()).optional(),
     imagesToDelete: yup.array().of(yup.number().integer().min(0)).optional(),

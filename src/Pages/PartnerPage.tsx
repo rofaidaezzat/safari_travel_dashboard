@@ -20,7 +20,7 @@ export default function PartnersPage() {
   const [showDelete, setShowDelete] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
 
-  const { data, isLoading, isError, error, refetch } = useGetPartnersQuery({ page, limit: 10, sort });
+  const { data, isLoading, isError, error, refetch } = useGetPartnersQuery({ page, limit: 10, sort }, { refetchOnMountOrArgChange: true });
 
   const partners = data?.data.partners || [];
 

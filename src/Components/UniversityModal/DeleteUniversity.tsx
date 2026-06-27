@@ -8,12 +8,14 @@ interface DeleteUniversityModalProps {
   open: boolean;
   university: University | null;
   onClose: () => void;
+  onDeleted?: () => void;
 }
 
 export function DeleteUniversityModal({
   open,
   university,
   onClose,
+  onDeleted,
 }: DeleteUniversityModalProps) {
   const { toast } = useToast();
   const [deleteUniversity, { isLoading }] = useDeleteUniversityMutation();
@@ -28,8 +30,19 @@ export function DeleteUniversityModal({
         description: `University ${university.name} has been deleted.`,
       });
       onClose();
+      onDeleted?.();
     } catch (error: any) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // 404 = item was deleted, server returned 404 for gone resource
+      if (error?.status === 404) {
+        toast({
+          title: "University deleted",
+          description: `University ${university.name} has been deleted.`,
+        });
+        onClose();
+        onDeleted?.();
+        return;
+      }
       toast({
         variant: "destructive",
         title: "Deletion failed",

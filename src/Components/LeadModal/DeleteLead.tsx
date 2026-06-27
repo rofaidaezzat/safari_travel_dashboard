@@ -8,11 +8,13 @@ interface DeleteLeadModalProps {
   open: boolean;
   lead: Lead | null;
   onClose: () => void;
+  onDeleted?: () => void;
 }
 export function DeleteLeadModal({
   open,
   lead,
   onClose,
+  onDeleted,
 }: DeleteLeadModalProps) {
   const { toast } = useToast();
   const [deleteLead, { isLoading }] = useDeleteLeadMutation();
@@ -28,7 +30,18 @@ export function DeleteLeadModal({
         description: `Lead ${lead.name} has been deleted successfully.`,
       });
       onClose();
+      onDeleted?.();
     } catch (error: any) {
+      // 404 = item deleted, server returned 404 for gone resource
+      if (error?.status === 404) {
+        toast({
+          title: "Lead deleted",
+          description: `Lead ${lead.name} has been deleted successfully.`,
+        });
+        onClose();
+        onDeleted?.();
+        return;
+      }
       toast({
         variant: "destructive",
         title: "Deletion failed",

@@ -8,12 +8,14 @@ interface DeleteApplicationModalProps {
   open: boolean;
   application: Application | null;
   onClose: () => void;
+  onDeleted?: () => void;
 }
 
 export function DeleteApplicationModal({
   open,
   application,
   onClose,
+  onDeleted,
 }: DeleteApplicationModalProps) {
   const { toast } = useToast();
   const [deleteApplication, { isLoading }] = useDeleteApplicationMutation();
@@ -29,7 +31,18 @@ export function DeleteApplicationModal({
         description: `Application for ${application.fullName} has been deleted successfully.`,
       });
       onClose();
+      onDeleted?.();
     } catch (error: any) {
+      // 404 = item deleted, server returned 404 for gone resource
+      if (error?.status === 404) {
+        toast({
+          title: "Application deleted",
+          description: `Application for ${application.fullName} has been deleted successfully.`,
+        });
+        onClose();
+        onDeleted?.();
+        return;
+      }
       toast({
         variant: "destructive",
         title: "Deletion failed",

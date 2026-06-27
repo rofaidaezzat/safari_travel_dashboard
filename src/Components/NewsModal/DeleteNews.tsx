@@ -8,9 +8,10 @@ interface DeleteNewsModalProps {
   open: boolean;
   news: News | null;
   onClose: () => void;
+  onDeleted?: () => void;
 }
 
-export function DeleteNewsModal({ open, news, onClose }: DeleteNewsModalProps) {
+export function DeleteNewsModal({ open, news, onClose, onDeleted }: DeleteNewsModalProps) {
   const { toast } = useToast();
   const [deleteNews, { isLoading }] = useDeleteNewsMutation();
 
@@ -24,6 +25,7 @@ export function DeleteNewsModal({ open, news, onClose }: DeleteNewsModalProps) {
         description: `News article deleted successfully.`,
       });
       onClose();
+      onDeleted?.();
     } catch (error: any) {
       toast({
         variant: "destructive",

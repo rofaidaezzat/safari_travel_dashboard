@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { customBaseQuery } from "./baseQueryWrapper";
 
 export interface University {
     _id: string;
@@ -33,17 +34,7 @@ interface UniversitiesResponse {
 
 export const universitiesApi = createApi({
     reducerPath: "universitiesApi",
-    baseQuery: fetchBaseQuery({
-        baseUrl: "https://safary-kappa.vercel.app/",
-        prepareHeaders: (headers) => {
-            const token = localStorage.getItem("accessToken");
-            if (token && token !== "undefined") {
-                headers.set("authorization", `Bearer ${token}`);
-            }
-            headers.set("ngrok-skip-browser-warning", "true");
-            return headers;
-        },
-    }),
+    baseQuery: customBaseQuery("universities"),
     tagTypes: ["University"],
     endpoints: (builder) => ({
         getUniversities: builder.query<UniversitiesResponse, { page?: number; limit?: number; sort?: string } | void>({

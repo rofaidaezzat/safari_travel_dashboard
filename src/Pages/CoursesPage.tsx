@@ -6,6 +6,7 @@ import { Button } from "../Components/UI/Button";
 import { Input } from "../Components/UI/Input";
 import { Pagination } from "../Components/Pagination";
 import { useGetCoursesQuery, type Course } from "../app/services/crudCourse";
+import { useGetUniversitiesQuery } from "../app/services/crudUniversity";
 import { CreateCourseModal } from "../Components/CourseModal/CreateCourse";
 import { UpdateCourseModal } from "../Components/CourseModal/UpdateCourse";
 import { DeleteCourseModal } from "../Components/CourseModal/DeleteCourse";
@@ -15,20 +16,32 @@ export default function CoursesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState("-createdAt");
+  const [universityFilter, setUniversityFilter] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
-  const { data, isLoading, isError, error, refetch } = useGetCoursesQuery({ page, limit: 10, sort });
+  const { data, isLoading, isError, error, refetch } = useGetCoursesQuery({ page, limit: 10, sort }, { refetchOnMountOrArgChange: true });
+  const { data: universitiesData } = useGetUniversitiesQuery({ limit: 1000 }, { refetchOnMountOrArgChange: true });
 
   const courses = data?.data.courses || [];
+  const universitiesList = universitiesData?.data?.universities || [];
 
-  const filteredCourses = courses.filter((course) =>
-    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredCourses = courses.filter((course) => {
+    const matchesSearch =
+      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    if (!matchesSearch) return false;
+    if (!universityFilter) return true;
+
+    // Check if course belongs to the selected university
+    return course.universities && course.universities.some(
+      (u: any) => (typeof u === "string" ? u : u._id) === universityFilter
+    );
+  });
 
   const handleOpenUpdate = (course: Course) => {
     setSelectedCourse(course);
@@ -75,6 +88,24 @@ export default function CoursesPage() {
             <option value="-createdAt">Newest</option>
             <option value="createdAt">Oldest</option>
           </select>
+          <select
+            value={universityFilter}
+            onChange={(e) => { setUniversityFilter(e.target.value); setPage(1); }}
+            className="h-10 px-3 rounded-xl border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <option value="">All Universities</option>
+            {universitiesList.map((uni) => (
+              <option key={uni._id} value={uni._id}>{uni.name}</option>
+            ))}
+          </select>
+          {universityFilter && (
+            <button
+              onClick={() => setUniversityFilter("")}
+              className="h-10 px-3 rounded-xl border border-destructive/50 bg-destructive/10 text-destructive text-sm hover:bg-destructive/20 transition-colors whitespace-nowrap"
+            >
+              Clear
+            </button>
+          )}
         </div>
 
         <motion.div
@@ -122,7 +153,7 @@ export default function CoursesPage() {
                         <div className="flex flex-wrap gap-1">
                           {course.universities && course.universities.length > 0 ? (
                             course.universities.map((uni: any, idx) => (
-                              <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded-md text-xs bg-muted text-muted-foreground">
+                              <span key={idx} className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs ${universityFilter && (typeof uni === "string" ? uni : uni._id) === universityFilter ? "bg-primary/20 text-primary font-medium" : "bg-muted text-muted-foreground"}`}>
                                 {uni.name || uni}
                               </span>
                             ))
@@ -156,13 +187,17 @@ export default function CoursesPage() {
                           <div className="flex flex-col items-center gap-2">
                             <span>
                               {
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 (error as any)?.data?.message || 
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 (error as any)?.message || 
                                 "Failed to load courses."
                               }
                             </span>
                             <Button variant="outline" size="sm" onClick={() => refetch()}>Retry</Button>
                           </div>
+                       ) : universityFilter ? (
+                         "No courses found for the selected university"
                        ) : (
                          "No courses found"
                        )}
@@ -178,6 +213,11 @@ export default function CoursesPage() {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p className="text-sm text-muted-foreground order-2 sm:order-1">
                     Showing {filteredCourses.length} results
+                    {universityFilter && (
+                      <span className="ml-1 text-primary font-medium">
+                        · filtered by {universitiesList.find(u => u._id === universityFilter)?.name}
+                      </span>
+                    )}
                 </p>
                 <div className="order-1 sm:order-2">
                     <Pagination
@@ -204,3 +244,4 @@ export default function CoursesPage() {
     </DashboardLayout>
   );
 }
+

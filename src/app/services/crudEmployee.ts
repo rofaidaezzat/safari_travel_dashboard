@@ -45,7 +45,7 @@ interface EmployeesResponse {
 export const employeesApi = createApi({
   reducerPath: "employeesApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://safary-kappa.vercel.app/",
+    baseUrl: "/",
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("accessToken");
 
