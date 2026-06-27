@@ -1,12 +1,20 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+export interface LeadAssignee {
+    _id: string;
+    name: string;
+    email: string;
+}
+
 export interface Lead {
     _id: string;
     name: string;
     email: string;
     phone: string;
     message: string;
-    status: "New" | "Contacted" | "Closed";
+    status: string;
+    is_assigned?: boolean;
+    assignedTo?: LeadAssignee | string;
     createdAt: string;
     updatedAt: string;
 }

@@ -26,7 +26,7 @@ import {
 } from "recharts";
 import { DashboardLayout } from "../Components/DashboardLayout";
 import { DashboardSkeleton } from "../Components/UI/DashboardSkeleton";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import {
   useGetDashboardCountsQuery,
   useGetDashboardTrendsQuery,
@@ -45,6 +45,10 @@ export default function DashboardHome() {
   const { data: activities, isLoading: activitiesLoading, isFetching } = useGetRecentActivitiesQuery({ page, limit: 10 }, { refetchOnMountOrArgChange: true });
 
   const isLoading = countsLoading || trendsLoading || appStatusLoading || activitiesLoading || coursesCountLoading;
+
+  if (localStorage.getItem("role") === "Employee") {
+    return <Navigate to="/dashboard/applications" replace />;
+  }
 
   const getRecentActivityIcon = (type: string) => {
     switch (type) {

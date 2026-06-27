@@ -59,7 +59,7 @@ export function UpdateLeadStatusModal({
     }
   };
 
-  const statuses: Lead["status"][] = ["New", "Contacted", "Closed"];
+  const statuses = ["Pending", "New", "Contacted", "In Progress", "Completed", "Closed", "Cancelled"];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">

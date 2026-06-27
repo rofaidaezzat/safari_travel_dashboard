@@ -71,7 +71,9 @@ export const createLeadSchema = yup.object().shape({
 });
 
 export const updateLeadStatusSchema = yup.object().shape({
-    status: yup.string().oneOf(["New", "Contacted", "Closed"], "Invalid status").required("Status is required"),
+    status: yup.string()
+        .oneOf(["New", "Contacted", "Closed", "Pending", "In Progress", "Completed", "Cancelled"], "Invalid status")
+        .required("Status is required"),
 });
 
 // --- Partner Schemas ---

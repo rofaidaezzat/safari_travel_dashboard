@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { X, Mail, Phone, MessageSquare, Calendar, Tag } from "lucide-react";
+import { X, Mail, Phone, MessageSquare, Calendar, Tag, UserCheck } from "lucide-react";
 import { type Lead } from "../../app/services/crudLead";
 
 interface ViewLeadModalProps {
@@ -25,16 +25,32 @@ export function ViewLeadModal({
     });
   };
 
-  const getStatusColor = (status: Lead["status"]) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case "New":
         return "bg-blue-500/10 text-blue-500";
       case "Contacted":
+      case "In Progress":
         return "bg-yellow-500/10 text-yellow-500";
+      case "Closed":
+      case "Completed":
+        return "bg-green-500/10 text-green-500";
+      case "Cancelled":
+        return "bg-red-500/10 text-red-500";
       default:
         return "bg-gray-500/10 text-gray-500";
     }
   };
+
+  const getAssignedToName = () => {
+    if (!lead.assignedTo) return null;
+    if (typeof lead.assignedTo === "object") {
+      return lead.assignedTo.name || lead.assignedTo.email || null;
+    }
+    return lead.assignedTo;
+  };
+
+  const assignedToName = getAssignedToName();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
@@ -95,6 +111,19 @@ export function ViewLeadModal({
               <p className="text-sm leading-relaxed">{lead.message}</p>
             </div>
           </div>
+
+          {assignedToName && (
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/10 border border-primary/20">
+              <UserCheck className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-xs text-muted-foreground">Assigned To</p>
+                <p className="font-medium">{assignedToName}</p>
+                {typeof lead.assignedTo === "object" && lead.assignedTo.email && (
+                  <p className="text-xs text-muted-foreground mt-0.5">{lead.assignedTo.email}</p>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Timestamps */}
           <div className="grid grid-cols-2 gap-4">

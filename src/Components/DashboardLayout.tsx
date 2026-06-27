@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", adminOnly: false },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", adminOnly: true },
   { icon: Users, label: "Employees", href: "/dashboard/employees", adminOnly: true },
   {
     icon: GraduationCap,
@@ -32,7 +32,7 @@ const menuItems = [
   { icon: FileText, label: "Applications", href: "/dashboard/applications", adminOnly: false },
   { icon: Newspaper, label: "News", href: "/dashboard/news", adminOnly: true },
   { icon: PenTool, label: "Blog", href: "/dashboard/blog", adminOnly: true },
-  { icon: UserCheck, label: "Leads", href: "/dashboard/leads", adminOnly: true },
+  { icon: UserCheck, label: "Leads", href: "/dashboard/leads", adminOnly: false },
   { icon: UserCircle, label: "My Profile", href: "/dashboard/admin-profile", adminOnly: true },
 ];
 
