@@ -58,7 +58,6 @@ export function ViewLeadModal({
           <div className="flex items-start justify-between">
             <div>
               <h3 className="text-2xl font-bold">{lead.name}</h3>
-              <p className="text-sm text-muted-foreground mt-1">ID: {lead._id}</p>
             </div>
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(lead.status)}`}>
               {lead.status}

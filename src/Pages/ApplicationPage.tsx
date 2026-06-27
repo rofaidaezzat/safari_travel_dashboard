@@ -25,6 +25,7 @@ export default function ApplicationPage() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState("-createdAt");
   const [statusFilter, setStatusFilter] = useState("");
+  const [universityFilter, setUniversityFilter] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showCreate, setShowCreate] = useState(false);
@@ -68,6 +69,16 @@ export default function ApplicationPage() {
   universitiesData?.data?.universities?.forEach((uni) => {
     universityMap.set(uni._id, uni.name);
   });
+
+  const universitiesList = universitiesData?.data?.universities || [];
+
+  const getUniversityId = (uni: unknown): string | null => {
+    if (!uni) return null;
+    if (typeof uni === "object" && uni !== null && "_id" in uni) {
+      return (uni as { _id: string })._id;
+    }
+    return typeof uni === "string" ? uni : null;
+  };
 
   const getUniversityName = (uni: any) => {
     if (!uni) return "-";
@@ -135,11 +146,14 @@ export default function ApplicationPage() {
 
     const matchesStatus = statusFilter === "" || (app.status || "Pending") === statusFilter;
 
+    const matchesUniversity =
+      !universityFilter || getUniversityId(app.desiredUniversity) === universityFilter;
+
     const appDate = new Date(app.createdAt);
     const matchesStart = startDate === "" || appDate >= new Date(startDate);
     const matchesEnd = endDate === "" || appDate <= new Date(endDate + "T23:59:59");
 
-    return matchesSearch && matchesStatus && matchesStart && matchesEnd;
+    return matchesSearch && matchesStatus && matchesUniversity && matchesStart && matchesEnd;
   });
 
   const handleExportExcel = () => {
@@ -232,6 +246,27 @@ export default function ApplicationPage() {
               <option value="-createdAt">Newest</option>
               <option value="createdAt">Oldest</option>
             </select>
+            <select
+              value={universityFilter}
+              onChange={(e) => {
+                setUniversityFilter(e.target.value);
+                setPage(1);
+              }}
+              className="h-10 px-3 rounded-xl border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <option value="">All Universities</option>
+              {universitiesList.map((uni) => (
+                <option key={uni._id} value={uni._id}>{uni.name}</option>
+              ))}
+            </select>
+            {universityFilter && (
+              <button
+                onClick={() => setUniversityFilter("")}
+                className="h-10 px-3 rounded-xl border border-destructive/50 bg-destructive/10 text-destructive text-sm hover:bg-destructive/20 transition-colors whitespace-nowrap"
+              >
+                Clear
+              </button>
+            )}
           </div>
 
           {/* Row 2: Status Filter + Date Range + Export Button */}
@@ -275,9 +310,14 @@ export default function ApplicationPage() {
             </div>
 
             {/* Clear Filters */}
-            {(statusFilter || startDate || endDate) && (
+            {(statusFilter || startDate || endDate || universityFilter) && (
               <button
-                onClick={() => { setStatusFilter(""); setStartDate(""); setEndDate(""); }}
+                onClick={() => {
+                  setStatusFilter("");
+                  setStartDate("");
+                  setEndDate("");
+                  setUniversityFilter("");
+                }}
                 className="h-10 px-4 rounded-xl border border-input bg-background text-sm hover:bg-muted transition-colors text-muted-foreground"
               >
                 Clear Filters
@@ -333,7 +373,9 @@ export default function ApplicationPage() {
                       <td className="py-4 px-6 text-muted-foreground">{app.desiredMajor}</td>
                       <td className="py-4 px-6 text-muted-foreground">{app.desiredCountry}</td>
                       <td className="py-4 px-6 text-muted-foreground">
-                        {getUniversityName(app.desiredUniversity)}
+                        <span className={universityFilter && getUniversityId(app.desiredUniversity) === universityFilter ? "text-primary font-medium" : ""}>
+                          {getUniversityName(app.desiredUniversity)}
+                        </span>
                       </td>
                      
                      
@@ -398,6 +440,8 @@ export default function ApplicationPage() {
                             </span>
                             <Button variant="outline" size="sm" onClick={() => refetch()}>Retry</Button>
                           </div>
+                       ) : universityFilter ? (
+                         "No applications found for the selected university"
                        ) : (
                          "No applications found"
                        )}
@@ -413,6 +457,11 @@ export default function ApplicationPage() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground order-2 sm:order-1">
               Showing {filteredApplications.length} results
+              {universityFilter && (
+                <span className="ml-1 text-primary font-medium">
+                  · filtered by {universitiesList.find((u) => u._id === universityFilter)?.name}
+                </span>
+              )}
             </p>
             <div className="order-1 sm:order-2">
               <Pagination
@@ -429,7 +478,11 @@ export default function ApplicationPage() {
         <DeleteApplicationModal 
           open={showDelete} 
           application={selectedApplication} 
-          onClose={() => setShowDelete(false)} 
+          onClose={() => setShowDelete(false)}
+          onDeleted={() => {
+            refetch();
+            setSelectedApplication(null);
+          }}
         />
         <ViewApplicationModal 
           open={showView} 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { X, Upload } from "lucide-react";
 import { Input } from "../UI/Input";
+import { SearchableSelect } from "../UI/SearchableSelect";
 import { Button } from "../UI/Button";
 import { useCreateApplicationMutation } from "../../app/services/crudApplication";
 import { useGetUniversitiesQuery } from "../../app/services/crudUniversity";
@@ -14,6 +15,52 @@ interface CreateApplicationModalProps {
   onClose: () => void;
 }
 
+const NATIONALITIES = [
+  "Afghan", "Albanian", "Algerian", "American", "Argentine", "Armenian", "Australian",
+  "Austrian", "Azerbaijani", "Bahraini", "Bangladeshi", "Belarusian", "Belgian",
+  "Bolivian", "Bosnian", "Brazilian", "British", "Bulgarian", "Cambodian", "Canadian",
+  "Chilean", "Chinese", "Colombian", "Croatian", "Cypriot", "Czech", "Danish",
+  "Dutch", "Ecuadorian", "Egyptian", "Emirati", "Estonian", "Ethiopian", "Filipino",
+  "Finnish", "French", "Georgian", "German", "Ghanaian", "Greek", "Hungarian",
+  "Icelandic", "Indian", "Indonesian", "Iranian", "Iraqi", "Irish", "Italian",
+  "Japanese", "Jordanian", "Kazakh", "Kenyan", "Kuwaiti", "Kyrgyz", "Latvian",
+  "Lebanese", "Libyan", "Lithuanian", "Luxembourgish", "Malaysian", "Maldivian",
+  "Malian", "Maltese", "Mexican", "Moldovan", "Mongolian", "Moroccan", "Nepalese",
+  "New Zealander", "Nigerian", "Norwegian", "Omani", "Pakistani", "Palestinian",
+  "Peruvian", "Polish", "Portuguese", "Qatari", "Romanian", "Russian", "Rwandan",
+  "Saudi", "Scottish", "Senegalese", "Serbian", "Singaporean", "Slovak", "Slovenian",
+  "Somali", "South African", "South Korean", "Spanish", "Sri Lankan", "Sudanese",
+  "Swedish", "Swiss", "Syrian", "Tajik", "Tanzanian", "Thai", "Tunisian", "Turkish",
+  "Turkmen", "Ugandan", "Ukrainian", "Uzbek", "Venezuelan", "Vietnamese", "Yemeni", "Zimbabwean",
+];
+
+const COUNTRIES = [
+  { value: "Uzbekistan", label: "Uzbekistan (أوزبكستان)" },
+  { value: "Azerbaijan", label: "Azerbaijan (أذربيجان)" },
+  { value: "Tajikistan", label: "Tajikistan (طاجكستان)" },
+  { value: "Turkey", label: "Turkey (تركيا)" },
+  { value: "Poland", label: "Poland (بولندا)" },
+  { value: "Spain", label: "Spain (إسبانيا)" },
+  { value: "Malaysia", label: "Malaysia (ماليزيا)" },
+  { value: "Other", label: "Other" },
+];
+
+const GRADUATION_YEAR_MAX = 2030;
+const GRADUATION_YEARS = Array.from(
+  { length: GRADUATION_YEAR_MAX - 2000 + 1 },
+  (_, i) => String(GRADUATION_YEAR_MAX - i)
+);
+
+const nationalityOptions = NATIONALITIES.map((item) => ({
+  value: item,
+  label: item,
+}));
+
+const graduationYearOptions = GRADUATION_YEARS.map((year) => ({
+  value: year,
+  label: year,
+}));
+
 export function CreateApplicationModal({
   open,
   onClose,
@@ -23,6 +70,10 @@ export function CreateApplicationModal({
   const { data: universitiesData } = useGetUniversitiesQuery({ limit: 100 }); // Fetch enough for dropdown
   
   const universities = universitiesData?.data?.universities || [];
+  const universityOptions = universities.map((uni) => ({
+    value: uni._id,
+    label: uni.name,
+  }));
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -180,10 +231,12 @@ export function CreateApplicationModal({
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium">Nationality</label>
-              <Input
+              <SearchableSelect
                 value={nationality}
-                onChange={(e) => setNationality(e.target.value)}
-                placeholder="Egyptian"
+                onChange={setNationality}
+                options={nationalityOptions}
+                placeholder="Select nationality"
+                searchPlaceholder="Search nationality..."
               />
               {errors.nationality && <p className="text-red-500 text-xs">{errors.nationality}</p>}
             </div>
@@ -201,10 +254,12 @@ export function CreateApplicationModal({
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium">Graduation Year</label>
-              <Input
+              <SearchableSelect
                 value={graduationYear}
-                onChange={(e) => setGraduationYear(e.target.value)}
-                placeholder="2023"
+                onChange={setGraduationYear}
+                options={graduationYearOptions}
+                placeholder="Select graduation year"
+                searchPlaceholder="Search year..."
               />
               {errors.graduationYear && <p className="text-red-500 text-xs">{errors.graduationYear}</p>}
             </div>
@@ -232,10 +287,12 @@ export function CreateApplicationModal({
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium">Desired Country</label>
-              <Input
+              <SearchableSelect
                 value={desiredCountry}
-                onChange={(e) => setDesiredCountry(e.target.value)}
-                placeholder="Turkey"
+                onChange={setDesiredCountry}
+                options={COUNTRIES}
+                placeholder="Select country"
+                searchPlaceholder="Search country..."
               />
               {errors.desiredCountry && <p className="text-red-500 text-xs">{errors.desiredCountry}</p>}
             </div>
@@ -244,18 +301,13 @@ export function CreateApplicationModal({
 
           <div className="space-y-1">
             <label className="text-sm font-medium">Desired University</label>
-            <select
+            <SearchableSelect
               value={desiredUniversity}
-              onChange={(e) => setDesiredUniversity(e.target.value)}
-              className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-            >
-              <option value="">Select a university</option>
-              {universities.map((uni) => (
-                <option key={uni._id} value={uni._id}>
-                  {uni.name}
-                </option>
-              ))}
-            </select>
+              onChange={setDesiredUniversity}
+              options={universityOptions}
+              placeholder="Select a university"
+              searchPlaceholder="Search university..."
+            />
             {errors.desiredUniversity && <p className="text-red-500 text-xs">{errors.desiredUniversity}</p>}
           </div>
 

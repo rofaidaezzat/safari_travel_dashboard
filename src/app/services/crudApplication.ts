@@ -118,10 +118,15 @@ export const applicationsApi = createApi({
                 url: `api/v1/applications/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (_result, _error, id) => [
-                { type: "Application", id },
-                { type: "Application", id: "LIST" },
-            ],
+            invalidatesTags: (_result, error, id) => {
+                if (error && "status" in error && error.status !== 404) {
+                    return [];
+                }
+                return [
+                    { type: "Application", id },
+                    { type: "Application", id: "LIST" },
+                ];
+            },
         }),
     }),
 });

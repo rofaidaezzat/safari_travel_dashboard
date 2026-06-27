@@ -8,7 +8,14 @@ export const createApplicationSchema = yup.object().shape({
     email: yup.string().email("Invalid email").required("Email is required"),
     nationality: yup.string().required("Nationality is required"),
     passportNumber: yup.string().required("Passport Number is required"),
-    graduationYear: yup.string().required("Graduation Year is required"),
+    graduationYear: yup
+        .string()
+        .required("Graduation Year is required")
+        .test("valid-year", "Graduation year must be between 2000 and 2030", (value) => {
+            if (!value) return false;
+            const year = parseInt(value, 10);
+            return year >= 2000 && year <= 2030;
+        }),
     highSchoolGrade: yup.string().required("High School Grade is required"),
     desiredMajor: yup.string().required("Desired Major is required"),
     desiredCountry: yup.string().optional(),
