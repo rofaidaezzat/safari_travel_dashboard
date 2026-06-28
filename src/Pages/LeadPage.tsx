@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Plus, Edit, Trash2, Eye } from "lucide-react";
+import { Search, Plus, Trash2, Eye, UserPlus } from "lucide-react";
 import { DashboardLayout } from "../Components/DashboardLayout";
 import { Button } from "../Components/UI/Button";
 import { Input } from "../Components/UI/Input";
 import { Pagination } from "../Components/Pagination";
 import { useGetLeadsQuery, type Lead } from "../app/services/crudLead";
 import { CreateLeadModal } from "../Components/LeadModal/CreateLead";
-import { UpdateLeadStatusModal } from "../Components/LeadModal/UpdateLeadStatus";
+import { AssignLeadModal } from "../Components/LeadModal/AssignLead";
 import { DeleteLeadModal } from "../Components/LeadModal/DeleteLead";
 import { ViewLeadModal } from "../Components/LeadModal/ViewLead";
 import { TableSkeleton } from "../Components/UI/TableSkeleton";
@@ -30,7 +30,7 @@ export default function LeadPage() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState("-createdAt");
   const [showCreate, setShowCreate] = useState(false);
-  const [showUpdate, setShowUpdate] = useState(false);
+  const [showAssign, setShowAssign] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showView, setShowView] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -64,9 +64,9 @@ export default function LeadPage() {
       )
     : leads;
 
-  const handleOpenUpdate = (lead: Lead) => {
+  const handleOpenAssign = (lead: Lead) => {
     setSelectedLead(lead);
-    setShowUpdate(true);
+    setShowAssign(true);
   };
 
   const handleOpenDelete = (lead: Lead) => {
@@ -77,23 +77,6 @@ export default function LeadPage() {
   const handleOpenView = (lead: Lead) => {
     setSelectedLead(lead);
     setShowView(true);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "New":
-        return "bg-blue-500/10 text-blue-500";
-      case "Contacted":
-      case "In Progress":
-        return "bg-yellow-500/10 text-yellow-500";
-      case "Closed":
-      case "Completed":
-        return "bg-green-500/10 text-green-500";
-      case "Cancelled":
-        return "bg-red-500/10 text-red-500";
-      default:
-        return "bg-gray-500/10 text-gray-500";
-    }
   };
 
   return (
@@ -152,14 +135,13 @@ export default function LeadPage() {
                   {!isEmployee && (
                     <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Assigned To</th>
                   )}
-                  <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Status</th>
                   <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Created</th>
                   <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {isLoading ? (
-                  <TableSkeleton columns={isEmployee ? 6 : 7} />
+                  <TableSkeleton columns={isEmployee ? 5 : 6} />
                 ) : filteredLeads.length > 0 ? (
                   filteredLeads.map((lead) => (
                     <tr
@@ -184,11 +166,6 @@ export default function LeadPage() {
                           )}
                         </td>
                       )}
-                      <td className="py-4 px-6">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(lead.status)}`}>
-                          {lead.status}
-                        </span>
-                      </td>
                       <td className="py-4 px-6 text-muted-foreground">
                         {new Date(lead.createdAt).toLocaleDateString()}
                       </td>
@@ -197,22 +174,27 @@ export default function LeadPage() {
                           <button
                             className="p-2 rounded-lg hover:bg-muted transition-colors"
                             onClick={() => handleOpenView(lead)}
+                            title="View"
                           >
                             <Eye className="h-4 w-4 text-muted-foreground" />
                           </button>
-                          <button
-                            className="p-2 rounded-lg hover:bg-muted transition-colors"
-                            onClick={() => handleOpenUpdate(lead)}
-                          >
-                            <Edit className="h-4 w-4 text-muted-foreground" />
-                          </button>
                           {!isEmployee && (
-                            <button
-                              className="p-2 rounded-lg hover:bg-destructive/10 transition-colors"
-                              onClick={() => handleOpenDelete(lead)}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </button>
+                            <>
+                              <button
+                                className="p-2 rounded-lg hover:bg-muted transition-colors"
+                                onClick={() => handleOpenAssign(lead)}
+                                title="Assign to Employee"
+                              >
+                                <UserPlus className="h-5 w-5 text-muted-foreground" />
+                              </button>
+                              <button
+                                className="p-2 rounded-lg hover:bg-destructive/10 transition-colors"
+                                onClick={() => handleOpenDelete(lead)}
+                                title="Delete"
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </button>
+                            </>
                           )}
                         </div>
                       </td>
@@ -220,7 +202,7 @@ export default function LeadPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={isEmployee ? 6 : 7} className="py-8 text-center text-muted-foreground">
+                    <td colSpan={isEmployee ? 5 : 6} className="py-8 text-center text-muted-foreground">
                       {isError ? (
                         <div className="flex flex-col items-center gap-2">
                           <span>
@@ -266,11 +248,11 @@ export default function LeadPage() {
 
         {/* Modals */}
         {!isEmployee && <CreateLeadModal open={showCreate} onClose={() => setShowCreate(false)} />}
-        <UpdateLeadStatusModal
-          open={showUpdate}
+        <AssignLeadModal
+          open={showAssign}
           lead={selectedLead}
           onClose={() => {
-            setShowUpdate(false);
+            setShowAssign(false);
             refetch();
           }}
         />

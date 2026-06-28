@@ -102,6 +102,18 @@ export const leadsApi = createApi({
                 { type: "Lead", id: "LIST" },
             ],
         }),
+
+        assignLead: builder.mutation<Lead, { id: string; assignedTo: string }>({
+            query: ({ id, assignedTo }) => ({
+                url: `api/v1/leads/${id}/assign`,
+                method: "PATCH",
+                body: { assignedTo },
+            }),
+            invalidatesTags: (_result, _error, { id }) => [
+                { type: "Lead", id },
+                { type: "Lead", id: "LIST" },
+            ],
+        }),
     }),
 });
 
@@ -110,4 +122,5 @@ export const {
     useCreateLeadMutation,
     useUpdateLeadStatusMutation,
     useDeleteLeadMutation,
+    useAssignLeadMutation,
 } = leadsApi;
